@@ -1,0 +1,1781 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>VERA — Proposal Healthkathon 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@400;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============ RESET & PAGE SETUP ============ */
+@page { size: 1280px 720px; margin: 0; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  width: 1280px;
+  background: #FAFAFA;
+  font-family: 'Inter', 'Noto Sans SC', sans-serif;
+  color: #0F2A5C;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ============ DESIGN TOKENS (Medis-Trust Authoritative) ============ */
+:root {
+  --bg-dark: #0F2A5C;          /* Cover & divider background */
+  --bg-light: #FAFAFA;          /* Content slide background */
+  --bg-card: #FFFFFF;           /* Card background */
+  --bg-soft: #F1F5F9;           /* Soft section bg */
+  --primary: #0F2A5C;          /* Deep navy */
+  --primary-mid: #1E3A8A;
+  --primary-light: #3B5BA5;
+  --accent: #DC2626;            /* Medical red flag */
+  --accent-soft: #FEE2E2;
+  --secondary: #0EA5E9;         /* Sky blue tech accent */
+  --secondary-soft: #E0F2FE;
+  --success: #16A34A;
+  --warning: #F59E0B;
+  --text-muted: #64748B;
+  --text-body: #1E293B;
+  --border: #E2E8F0;
+  --border-strong: #CBD5E1;
+}
+
+/* ============ PAGE (SLIDE) CANVAS ============ */
+.page {
+  width: 1280px;
+  height: 720px;
+  position: relative;
+  overflow: hidden;
+  page-break-after: always;
+  break-after: page;
+  background: var(--bg-light);
+  color: var(--primary);
+}
+.page:last-child { page-break-after: auto; break-after: auto; }
+
+/* Slide page numbering & header bar */
+.slide-header {
+  position: absolute;
+  top: 32px;
+  left: 64px;
+  right: 64px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  font-weight: 500;
+  z-index: 5;
+}
+.slide-header .brand { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 13px; letter-spacing: 1px; color: var(--primary); text-transform: none; }
+.slide-header .brand .dot { color: var(--accent); margin: 0 4px; }
+.slide-footer {
+  position: absolute;
+  bottom: 24px;
+  left: 64px;
+  right: 64px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: var(--text-muted);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  z-index: 5;
+}
+.slide-footer .pagenum { font-family: 'JetBrains Mono', monospace; font-weight: 600; color: var(--primary); }
+
+/* Content container */
+.slide-body {
+  position: absolute;
+  top: 88px;
+  left: 64px;
+  right: 64px;
+  bottom: 64px;
+}
+.slide-body.flush-top { top: 64px; }
+
+/* Typography */
+.eyebrow {
+  font-size: 12px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 700;
+  margin-bottom: 14px;
+}
+.section-num { font-family: 'JetBrains Mono', monospace; font-weight: 600; color: var(--accent); }
+.h-display { font-family: 'Playfair Display', serif; font-weight: 900; font-size: 60px; line-height: 1.05; color: var(--primary); letter-spacing: -1px; }
+.h-section { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 38px; line-height: 1.15; color: var(--primary); }
+.h-sub { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 24px; line-height: 1.25; color: var(--primary); }
+.lead { font-size: 16px; line-height: 1.6; color: var(--text-body); font-weight: 400; }
+.body { font-size: 14px; line-height: 1.65; color: var(--text-body); }
+.body-sm { font-size: 13px; line-height: 1.55; color: var(--text-body); }
+.caption { font-size: 11px; line-height: 1.4; color: var(--text-muted); letter-spacing: 0.5px; }
+.mono { font-family: 'JetBrains Mono', monospace; }
+
+/* ============ SLIDE 1: COVER ============ */
+.cover {
+  background: linear-gradient(135deg, #0F2A5C 0%, #1E3A8A 70%, #0F2A5C 100%);
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+}
+.cover::before {
+  content: '';
+  position: absolute;
+  top: 0; right: 0; bottom: 0;
+  width: 45%;
+  background: radial-gradient(circle at 70% 30%, rgba(14, 165, 233, 0.15) 0%, transparent 60%);
+  z-index: 1;
+}
+.cover::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #DC2626 0%, #DC2626 30%, #0EA5E9 30%, #0EA5E9 100%);
+  z-index: 3;
+}
+.cover-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+  background-size: 64px 64px;
+  z-index: 1;
+}
+.cover-content {
+  position: absolute;
+  top: 80px; left: 80px; right: 80px; bottom: 80px;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+}
+.cover-meta-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  font-weight: 500;
+  color: rgba(255,255,255,0.7);
+}
+.cover-meta-top .logo {
+  font-family: 'Playfair Display', serif;
+  font-weight: 900;
+  font-size: 14px;
+  letter-spacing: 1.5px;
+  color: #fff;
+}
+.cover-meta-top .logo .dot { color: var(--accent); }
+.cover-center {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.cover-kicker {
+  font-size: 13px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--secondary);
+  font-weight: 600;
+  margin-bottom: 18px;
+}
+.cover-title {
+  font-family: 'Playfair Display', serif;
+  font-weight: 900;
+  font-size: 144px;
+  line-height: 0.95;
+  letter-spacing: -4px;
+  color: #fff;
+  margin-bottom: 12px;
+}
+.cover-subtitle {
+  font-family: 'Playfair Display', serif;
+  font-weight: 400;
+  font-style: italic;
+  font-size: 28px;
+  line-height: 1.3;
+  color: rgba(255,255,255,0.92);
+  margin-bottom: 28px;
+  max-width: 700px;
+}
+.cover-tagline {
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: rgba(255,255,255,0.88);
+  border-left: 3px solid var(--accent);
+  padding-left: 16px;
+  max-width: 620px;
+  font-style: italic;
+}
+.cover-meta-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  font-size: 12px;
+  letter-spacing: 1.5px;
+  color: rgba(255,255,255,0.65);
+}
+.cover-badge {
+  background: rgba(220, 38, 38, 0.18);
+  border: 1px solid rgba(220, 38, 38, 0.5);
+  padding: 8px 14px;
+  border-radius: 4px;
+  color: #FECACA;
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+.cover-badge.secondary {
+  background: rgba(14, 165, 233, 0.15);
+  border-color: rgba(14, 165, 233, 0.5);
+  color: #BAE6FD;
+}
+
+/* ============ SLIDE 2: DAFTAR ISI ============ */
+.toc-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px 32px;
+  margin-top: 20px;
+}
+.toc-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 14px 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--primary);
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+.toc-item:nth-child(1) { border-left-color: var(--accent); }
+.toc-item .num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1;
+}
+.toc-item .text-block .title {
+  font-family: 'Playfair Display', serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 2px;
+}
+.toc-item .text-block .desc {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+/* ============ SLIDE 3: B1 IDENTITAS ============ */
+.id-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 32px;
+  margin-top: 24px;
+  height: calc(100% - 80px);
+}
+.id-left { display: flex; flex-direction: column; justify-content: center; }
+.id-right { display: flex; flex-direction: column; gap: 14px; justify-content: center; }
+.vera-name {
+  font-family: 'Playfair Display', serif;
+  font-weight: 900;
+  font-size: 108px;
+  line-height: 0.95;
+  letter-spacing: -3px;
+  color: var(--primary);
+}
+.vera-expand {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+  margin-top: 6px;
+  margin-bottom: 14px;
+}
+.vera-tagline {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-size: 20px;
+  line-height: 1.35;
+  color: var(--primary-mid);
+  border-left: 3px solid var(--accent);
+  padding-left: 14px;
+}
+.id-meta {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  padding: 16px 20px;
+  border-radius: 4px;
+}
+.id-meta .label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px; }
+.id-meta .value { font-size: 14px; font-weight: 600; color: var(--primary); }
+.id-meta .value .pill { background: var(--accent-soft); color: var(--accent); padding: 2px 8px; border-radius: 3px; font-size: 12px; margin-left: 6px; }
+.usp-list { list-style: none; margin-top: 4px; }
+.usp-list li { display: flex; gap: 10px; margin-bottom: 8px; align-items: flex-start; }
+.usp-list li::before { content: '◆'; color: var(--accent); font-size: 14px; line-height: 1.5; flex-shrink: 0; }
+
+/* ============ SLIDE 4: B1b PERGESERAN PARADIGMA ============ */
+.compare {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  margin-top: 24px;
+  height: calc(100% - 100px);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.compare-col {
+  padding: 28px 26px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+.compare-col.old { background: #F8FAFC; }
+.compare-col.new { background: var(--primary); color: #fff; }
+.compare-col .col-label { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; font-weight: 700; margin-bottom: 8px; }
+.compare-col.old .col-label { color: var(--text-muted); }
+.compare-col.new .col-label { color: var(--secondary); }
+.compare-col .col-title { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 700; line-height: 1.15; margin-bottom: 16px; }
+.compare-col.old .col-title { color: #475569; }
+.compare-col.new .col-title { color: #fff; }
+.compare-list { list-style: none; flex: 1; }
+.compare-list li {
+  display: flex;
+  gap: 10px;
+  font-size: 13px;
+  line-height: 1.5;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px dashed;
+}
+.compare-col.old .compare-list li { border-color: #E2E8F0; color: #475569; }
+.compare-col.new .compare-list li { border-color: rgba(255,255,255,0.2); color: rgba(255,255,255,0.92); }
+.compare-list li .ico {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  font-size: 12px;
+  flex-shrink: 0;
+  width: 18px;
+  text-align: center;
+}
+.compare-col.old .ico { color: var(--text-muted); }
+.compare-col.new .ico { color: var(--secondary); }
+.compare-arrow {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  font-weight: 700;
+  z-index: 3;
+  border: 3px solid #fff;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+}
+
+/* ============ SLIDE 5: B2 MASaLAH ============ */
+.case-narrative {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 32px;
+  margin-top: 20px;
+  height: calc(100% - 100px);
+}
+.case-text { display: flex; flex-direction: column; }
+.case-quote {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-size: 17px;
+  line-height: 1.55;
+  color: var(--primary-mid);
+  border-left: 3px solid var(--accent);
+  padding: 12px 16px;
+  background: var(--accent-soft);
+  margin-bottom: 18px;
+  border-radius: 0 4px 4px 0;
+}
+.case-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.case-step {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 12px 14px;
+  background: var(--bg-card);
+  border-left: 3px solid var(--primary);
+  border-radius: 0 4px 4px 0;
+}
+.case-step.red { border-left-color: var(--accent); background: var(--accent-soft); }
+.case-step .step-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+.case-step .step-title { font-size: 13px; font-weight: 700; color: var(--primary); margin-bottom: 3px; }
+.case-step .step-desc { font-size: 12px; color: var(--text-body); line-height: 1.5; }
+.case-visual {
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.case-visual .visual-title { font-family: 'Playfair Display', serif; font-size: 14px; color: var(--primary); margin-bottom: 14px; font-weight: 700; text-align: center; }
+.case-visual .visual-svg { width: 100%; max-width: 340px; }
+.case-visual .visual-caption { font-size: 11px; color: var(--text-muted); text-align: center; margin-top: 12px; line-height: 1.4; }
+</style>
+</head>
+<body>
+<!-- ====================================================================
+     SLIDE 1 — COVER
+     ==================================================================== -->
+<section class="page cover">
+  <div class="cover-grid"></div>
+  <div class="cover-content">
+    <div class="cover-meta-top">
+      <div class="logo">HEALTHKATHON<span class="dot">·</span>2026</div>
+      <div>DETECT SMARTER · PROTECT JKN</div>
+    </div>
+    <div class="cover-center">
+      <div class="cover-kicker">PROPOSAL PESERTA</div>
+      <div class="cover-title">VERA</div>
+      <div class="cover-subtitle">Validasi Episode &amp; Recovery Anomaly</div>
+      <div class="cover-tagline">"Membaca Kurva Biologis, Membongkar Waktu Fiktif."</div>
+    </div>
+    <div class="cover-meta-bottom">
+      <div>
+        <div class="cover-badge">EFISIENSI RISIKO FASILITAS KESEHATAN</div>
+        <div style="margin-top:8px;"><span class="cover-badge secondary">PROLONGED STAY &amp; READMISI</span></div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:#fff;">Tim VERA</div>
+        <div style="margin-top:4px;">2026</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====================================================================
+     SLIDE 2 — DAFTAR ISI
+     ==================================================================== -->
+<section class="page">
+  <div class="slide-header">
+    <div class="brand">VERA<span class="dot">·</span>Proposal Healthkathon 2026</div>
+    <div>Daftar Isi</div>
+  </div>
+  <div class="slide-body">
+    <div class="eyebrow">STRUKTUR PROPOSAL</div>
+    <div class="h-section">Sembilan Bagian Wajib, <br>Satu Narasi.</div>
+    <div class="toc-grid">
+      <div class="toc-item"><div class="num">01</div><div class="text-block"><div class="title">Identitas &amp; Positioning</div><div class="desc">Nama, kategori, tagline, keunikan VERA</div></div></div>
+      <div class="toc-item"><div class="num">02</div><div class="text-block"><div class="title">Masalah &amp; Urgensi</div><div class="desc">Anatomi penipuan prolonged stay + data defisit JKN</div></div></div>
+      <div class="toc-item"><div class="num">03</div><div class="text-block"><div class="title">Solusi &amp; Keunggulan</div><div class="desc">Clinical Temporal Analyzer + 3 fitur inti</div></div></div>
+      <div class="toc-item"><div class="num">04</div><div class="text-block"><div class="title">Pendekatan Teknis &amp; Data</div><div class="desc">Arsitektur serverless AI + alur pipeline + prompt</div></div></div>
+      <div class="toc-item"><div class="num">05</div><div class="text-block"><div class="title">Tingkat Kematangan</div><div class="desc">Prototype MVP fungsional + mockup kurva anomali</div></div></div>
+      <div class="toc-item"><div class="num">06</div><div class="text-block"><div class="title">Rencana &amp; Kelayakan</div><div class="desc">Timeline 3 fase + deliverable per fase</div></div></div>
+      <div class="toc-item"><div class="num">07</div><div class="text-block"><div class="title">Dampak &amp; Nilai</div><div class="desc">Penghematan terukur + penerima manfaat</div></div></div>
+      <div class="toc-item"><div class="num">08</div><div class="text-block"><div class="title">Risiko, Privasi &amp; Etika</div><div class="desc">UU PDP, hallucination, false positive mitigation</div></div></div>
+      <div class="toc-item" style="grid-column: span 2;"><div class="num">09</div><div class="text-block"><div class="title">Profil &amp; Pengalaman Tim</div><div class="desc">AI Architect · Full-Stack Cloud Engineer · Clinical Domain Expert</div></div></div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <div>VERA — Validasi Episode &amp; Recovery Anomaly</div>
+    <div class="pagenum">02 / 20</div>
+  </div>
+</section>
+
+<!-- ====================================================================
+     SLIDE 3 — B1 IDENTITAS & POSITIONING
+     ==================================================================== -->
+<section class="page">
+  <div class="slide-header">
+    <div class="brand">VERA<span class="dot">·</span>Bagian 01</div>
+    <div>Identitas &amp; Positioning</div>
+  </div>
+  <div class="slide-body">
+    <div class="eyebrow"><span class="section-num">B01</span> · IDENTITAS SOLUSI</div>
+    <div class="id-grid">
+      <div class="id-left">
+        <div class="vera-name">VERA</div>
+        <div class="vera-expand">Validasi Episode &amp; Recovery Anomaly</div>
+        <div class="vera-tagline">"Membaca Kurva Biologis,<br>Membongkar Waktu Fiktif."</div>
+      </div>
+      <div class="id-right">
+        <div class="id-meta">
+          <div class="label">Kategori Challenge</div>
+          <div class="value">Efisiensi Risiko Fasilitas Kesehatan</div>
+        </div>
+        <div class="id-meta">
+          <div class="label">Sub-Kategori Fokus</div>
+          <div class="value">Prolonged Stay &amp; Readmisi <span class="pill">FOKUS TUNGGAL</span></div>
+        </div>
+        <div class="id-meta" style="background:var(--primary); color:#fff; border-color:var(--primary);">
+          <div class="label" style="color:rgba(255,255,255,0.6);">Positioning Unik</div>
+          <div class="value" style="color:#fff; font-size:13px; line-height:1.45;">AI Clinical Temporal Analyzer pertama: beralih dari Validasi Kode Administrasi ke Validasi Jejak Klinis Berbasis Waktu.</div>
+        </div>
+        <div style="margin-top:6px;">
+          <div class="caption" style="margin-bottom:6px; font-weight:600; color:var(--primary);">KEUNGGULAN UTAMA</div>
+          <ul class="usp-list">
+            <li><div><b>Bukti biologis, bukan narasi.</b> Klaim perpanjangan rawat divalidasi via lab &amp; vital sign harian.</div></li>
+            <li><div><b>Serverless AI Stack.</b> Zero-maintenance, skala otomatis sesuai volume klaim BPJS.</div></li>
+            <li><div><b>Latensi milidetik.</b> Ekstraksi &amp; deteksi anomali real-time di Vercel Edge.</div></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <div>VERA — Identitas &amp; Positioning</div>
+    <div class="pagenum">03 / 20</div>
+  </div>
+</section>
+
+<!-- ====================================================================
+     SLIDE 4 — B1b PERGESERAN PARADIGMA
+     ==================================================================== -->
+<section class="page">
+  <div class="slide-header">
+    <div class="brand">VERA<span class="dot">·</span>Bagian 01</div>
+    <div>Pergeseran Paradigma</div>
+  </div>
+  <div class="slide-body">
+    <div class="eyebrow"><span class="section-num">B01</span> · KENAPA VERA UNIK</div>
+    <div class="h-section">Dari Validasi Kode Administrasi<br>ke Validasi Jejak Klinis Berbasis Waktu.</div>
+    <div class="compare">
+      <div class="compare-col old">
+        <div class="col-label">PENDEKATAN SAAT INI</div>
+        <div class="col-title">Validasi Kode<br>Administrasi</div>
+        <ul class="compare-list">
+          <li><span class="ico">×</span><div>Sistem BPJS membaca kode ICD-10/ICD-9-CM, bukan kesesuaian waktu terhadap kondisi medis pasien.</div></li>
+          <li><span class="ico">×</span><div>Narasi dokter RS ("pasien masih lemah, perlu observasi lanjut") dipercaya sebagai dasar perpanjangan rawat.</div></li>
+          <li><span class="ico">×</span><div>Audit manual memerlukan reviewer membaca catatan medis panjang — lambat &amp; tidak skalabel.</div></li>
+          <li><span class="ico">×</span><div>Tidak ada pemetaan matematis kapan seharusnya pasien pulang berdasarkan sains medis.</div></li>
+        </ul>
+      </div>
+      <div class="compare-col new">
+        <div class="col-label">SOLUSI VERA</div>
+        <div class="col-title">Validasi Jejak Klinis<br>Berbasis Waktu</div>
+        <ul class="compare-list">
+          <li><span class="ico">✓</span><div>Ekstrak parameter klinis harian (leukosit, trombosit, TD, suhu) dari teks EMR tidak terstruktur via LLM.</div></li>
+          <li><span class="ico">✓</span><div>Petakan data ke Kurva Pemulihan Time-Series, bandingkan dengan kurva standar penyakit.</div></li>
+          <li><span class="ico">✓</span><div>Logika matematis: lab normal di H3 tapi klaim sampai H7 = <b style="color:#FCA5A5;">Red Flag</b> otomatis.</div></li>
+          <li><span class="ico">✓</span><div>Reviewer cukup lihat <i>Recovery Deviation Score</i> + grafik anomali sebagai bukti ilmiah.</div></li>
+        </ul>
+        <div class="compare-arrow">→</div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <div>VERA — Pergeseran Paradigma</div>
+    <div class="pagenum">04 / 20</div>
+  </div>
+</section>
+
+<!-- ====================================================================
+     SLIDE 5 — B2 MASALAH & ANATOMI PENIPUAN
+     ==================================================================== -->
+<section class="page">
+  <div class="slide-header">
+    <div class="brand">VERA<span class="dot">·</span>Bagian 02</div>
+    <div>Masalah &amp; Anatomi Penipuan</div>
+  </div>
+  <div class="slide-body">
+    <div class="eyebrow"><span class="section-num">B02</span> · MASALAH UTAMA</div>
+    <div class="h-section">Manipulasi <i>Prolonged Stay</i> — Hari Rawat Fiktif.</div>
+    <div class="case-narrative">
+      <div class="case-text">
+        <div class="case-quote">"Pasien masih lemah, perlu observasi lanjut."<br><span style="font-size:12px; color:var(--text-muted); font-style:normal;">— Frasa cukup ditulis di catatan medis untuk memperpanjang rawat inap. Sistem BPJS saat ini tidak bisa membuktikan sebaliknya.</span></div>
+        <div class="case-steps">
+          <div class="case-step">
+            <div class="step-num">01</div>
+            <div>
+              <div class="step-title">Klaim normal diproses tanpa validasi biologis</div>
+              <div class="step-desc">BPJS membaca kode ICD &amp; jumlah hari rawat. Catatan klinis tidak dianalisis secara temporal.</div>
+            </div>
+          </div>
+          <div class="case-step">
+            <div class="step-num">02</div>
+            <div>
+              <div class="step-title">Satu kalimat narasi = perpanjangan sah</div>
+              <div class="step-desc">Dokter RS menulis justasi observasi — sistem terima sebagai valid. Tidak ada pembanding matematis.</div>
+            </div>
+          </div>
+          <div class="case-step red">
+            <div class="step-num">03</div>
+            <div>
+              <div class="step-title">Hari fiktif dibayar sebagai hari riil</div>
+              <div class="step-desc">Klaim H5-H7 untuk pasien Pneumonia yang lab-nya normal sejak H3 dibayar penuh. <b>Kerugian terakumulasi diam-diam.</b></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="case-visual">
+        <div class="visual-title">Anatomi Kasus — Pneumonia Fiktif H3→H7</div>
+        <svg class="visual-svg" viewBox="0 0 340 220" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="redZone" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#DC2626" stop-opacity="0.22"/>
+              <stop offset="1" stop-color="#DC2626" stop-opacity="0.05"/>
+            </linearGradient>
+          </defs>
+          <!-- Axes -->
+          <line x1="40" y1="180" x2="320" y2="180" stroke="#94A3B8" stroke-width="1"/>
+          <line x1="40" y1="30" x2="40" y2="180" stroke="#94A3B8" stroke-width="1"/>
+          <!-- Day labels -->
+          <text x="40" y="195" font-family="JetBrains Mono" font-size="9" fill="#64748B" text-anchor="middle">H1</text>
+          <text x="110" y="195" font-family="JetBrains Mono" font-size="9" fill="#64748B" text-anchor="middle">H3</text>
+          <text x="250" y="195" font-family="JetBrains Mono" font-size="9" fill="#DC2626" text-anchor="middle" font-weight="700">H7</text>
+          <!-- Anomaly zone H3-H7 -->
+          <rect x="110" y="30" width="140" height="150" fill="url(#redZone)"/>
+          <!-- Normal recovery curve -->
+          <path d="M40 50 Q 75 75 110 110 T 180 160 L 320 168" stroke="#16A34A" stroke-width="2.5" fill="none"/>
+          <text x="200" y="155" font-family="Inter" font-size="9" fill="#16A34A" font-weight="700">Kurva Standar Pemulihan</text>
+          <!-- Claimed stay curve (flat - anomaly) -->
+          <path d="M40 50 Q 75 75 110 110 L 250 108" stroke="#DC2626" stroke-width="2.5" fill="none" stroke-dasharray="5,3"/>
+          <text x="180" y="100" font-family="Inter" font-size="9" fill="#DC2626" font-weight="700">Klaim RS (terus dipanjangkan)</text>
+          <!-- Red Flag indicator -->
+          <circle cx="250" cy="108" r="6" fill="#DC2626"/>
+          <text x="265" y="112" font-family="JetBrains Mono" font-size="10" fill="#DC2626" font-weight="700">RED FLAG</text>
+          <!-- Y axis label -->
+          <text x="35" y="40" font-family="Inter" font-size="8" fill="#64748B" text-anchor="end" transform="rotate(-90 35 40)">Tingkat Keparahan</text>
+        </svg>
+        <div class="visual-caption">Lab normal sejak H3, tapi klaim dipanjangkan sampai H7 → <b style="color:var(--accent);">selisih 4 hari fiktif</b>.</div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <div>VERA — Masalah &amp; Anatomi Penipuan</div>
+    <div class="pagenum">05 / 20</div>
+  </div>
+</section>
+<!-- ====================================================================
+     SLIDE 6 — B2b URGENSI & DATA
+     ==================================================================== -->
+<section class="page">
+  <div class="slide-header">
+    <div class="brand">VERA<span class="dot">·</span>Bagian 02</div>
+    <div>Urgensi &amp; Data</div>
+  </div>
+  <div class="slide-body">
+    <div class="eyebrow"><span class="section-num">B02</span> · URGENSI &amp; DATA</div>
+    <div class="h-section">Defisit JKN 2025 — Tahun Kritis<br>untuk Bertindak.</div>
+    <div style="display:grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap:14px; margin-top:24px;">
+      <div style="background:var(--bg-card); border:1px solid var(--border); border-top:3px solid var(--accent); padding:18px 16px; border-radius:4px;">
+        <div style="font-family:'Playfair Display',serif; font-size:42px; font-weight:900; color:var(--accent); line-height:1; letter-spacing:-1.5px;">Rp17,13<span style="font-size:22px;">T</span></div>
+        <div style="font-size:11px; letter-spacing:1.5px; text-transform:uppercase; color:var(--text-muted); margin-top:6px; font-weight:600;">DEFISIT JKN 2025</div>
+        <div style="font-size:11px; color:var(--text-body); line-height:1.4; margin-top:6px;">Tahun pertama sejak JKN beroperasi, defisit operasional tercatat rekor.</div>
+      </div>
+      <div style="background:var(--bg-card); border:1px solid var(--border); border-top:3px solid var(--primary); padding:18px 16px; border-radius:4px;">
+        <div style="font-family:'Playfair Display',serif; font-size:42px; font-weight:900; color:var(--primary); line-height:1; letter-spacing:-1.5px;">117<span style="font-size:22px;">%</span></div>
+        <div style="font-size:11px; letter-spacing:1.5px; text-transform:uppercase; color:var(--text-muted); margin-top:6px; font-weight:600;">RASIO KLAIM / IURAN</div>
+        <div style="font-size:11px; color:var(--text-body); line-height:1.4; margin-top:6px;">Setiap Rp 100 iuran masuk, klaim yang dibayar mencapai Rp 117.</div>
+      </div>
+      <div style="background:var(--bg-card); border:1px solid var(--border); border-top:3px solid var(--primary); padding:18px 16px; border-radius:4px;">
+        <div style="font-family:'Playfair Display',serif; font-size:42px; font-weight:900; color:var(--primary); line-height:1; letter-spacing:-1.5px;">&gt;60<span style="font-size:22px;">%</span></div>
+        <div style="font-size:11px; letter-spacing:1.5px; text-transform:uppercase; color:var(--text-muted); margin-top:6px; font-weight:600;">KLAIM = RAWAT INAP</div>
+        <div style="font-size:11px; color:var(--text-body); line-height:1.4; margin-top:6px;">Biaya rawat inap menyerap lebih dari 60% total klaim JKN nasional.</div>
+      </div>
+      <div style="background:var(--primary); color:#fff; border:1px solid var(--primary); padding:18px 16px; border-radius:4px;">
+        <div style="font-family:'Playfair Display',serif; font-size:42px; font-weight:900; color:#fff; line-height:1; letter-spacing:-1.5px;">±ratusan<span style="font-size:18px;"> M</span></div>
+        <div style="font-size:11px; letter-spacing:1.5px; text-transform:uppercase; color:rgba(255,255,255,0.65); margin-top:6px; font-weight:600;">KERUGIAN/BULAN</div>
+        <div style="font-size:11px; color:rgba(255,255,255,0.85); line-height:1.4; margin-top:6px;">Penambahan 1 hari fiktif pada 10.000 pasien = potensi ratusan miliar/bulan.</div>
+      </div>
+    </div>
+    <div style="margin-top:24px; padding:14px 18px; background:var(--bg-soft); border-left:3px solid var(--secondary); border-radius:0 4px 4px 0; display:flex; gap:18px; align-items:center;">
+      <div style="font-family:'Playfair Display',serif; font-size:18px; font-weight:700; color:var(--primary); line-height:1.3; flex:1;">"KPK Juli 2026 menyoroti celah fraud faskes dan minta BPJS perketat klaim medis riil."</div>
+      <div style="font-size:10px; letter-spacing:1.5px; color:var(--text-muted); text-transform:uppercase; font-weight:600; text-align:right; min-width:140px;">SUMBER:<br>BPJS 2025<br>KPK JULI 2026</div>
+    </div>
+    <div style="margin-top:14px; font-size:12px; color:var(--text-body); line-height:1.55; padding:0 4px;">
+      <b style="color:var(--accent);">Konklusi:</b> BPJS membutuhkan sistem yang membuktikan <i>kapan seharusnya pasien pulang secara matematis</i>, bukan sekadar mempercayai narasi dokter RS. Setiap hari yang tidak divalidasi secara biologis = potensi pembayaran fiktif.
+    </div>
+  </div>
+  <div class="slide-footer">
+    <div>VERA — Urgensi &amp; Data</div>
+    <div class="pagenum">06 / 20</div>
+  </div>
+</section>
+
+<!-- ====================================================================
+     SLIDE 7 — B3 IDE SOLUSI VERA
+     ==================================================================== -->
+<section class="page">
+  <div class="slide-header">
+    <div class="brand">VERA<span class="dot">·</span>Bagian 03</div>
+    <div>Ide Solusi</div>
+  </div>
+  <div class="slide-body">
+    <div class="eyebrow"><span class="section-num">B03</span> · IDE SOLUSI</div>
+    <div class="h-section">Mesin AI yang <i>membuktikan kapan</i><br>pasien seharusnya pulang.</div>
+    <div style="margin-top:28px;">
+      <div style="display:grid; grid-template-columns: 1fr 80px 1fr 80px 1fr; gap:0; align-items:stretch;">
+        <!-- Step 1: Extract -->
+        <div style="background:var(--bg-card); border:1px solid var(--border); border-top:3px solid var(--secondary); padding:24px 20px; border-radius:6px 0 0 6px;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; color:var(--secondary); letter-spacing:2px;">STEP 01</div>
+          <div style="font-family:'Playfair Display',serif; font-size:24px; font-weight:700; color:var(--primary); margin:6px 0 12px;">Extract</div>
+          <div style="font-size:12px; color:var(--text-body); line-height:1.55;">
+            LLM Clinical NLP mengurai teks EMR tidak terstruktur → mengeluarkan parameter klinis harian: <b>leukosit, trombosit, TD, suhu, kesadaran</b>.
+          </div>
+          <div style="margin-top:14px; padding:8px 10px; background:var(--secondary-soft); border-radius:3px; font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--primary); line-height:1.5;">
+            INPUT: "H3: TD 120/80, Lab: Leukosit 8000"<br>OUTPUT: {date:"H3", td_s:120, td_d:80, leuko:8000}
+          </div>
+        </div>
+        <!-- Arrow -->
+        <div style="display:flex; align-items:center; justify-content:center; background:var(--bg-light); position:relative;">
+          <svg width="60" height="20" viewBox="0 0 60 20"><path d="M0 10 L48 10 M40 4 L48 10 L40 16" stroke="#0F2A5C" stroke-width="2" fill="none"/></svg>
+        </div>
+        <!-- Step 2: Compare -->
+        <div style="background:var(--bg-card); border:1px solid var(--border); border-top:3px solid var(--primary); padding:24px 20px;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; color:var(--primary); letter-spacing:2px;">STEP 02</div>
+          <div style="font-family:'Playfair Display',serif; font-size:24px; font-weight:700; color:var(--primary); margin:6px 0 12px;">Compare</div>
+          <div style="font-size:12px; color:var(--text-body); line-height:1.55;">
+            Logika Time-Series membandingkan kurva pasien dengan <b>kurva pemulihan standar penyakit</b> (Pneumonia, Stroke, CHF) berdasarkan sains medis.
+          </div>
+          <div style="margin-top:14px; padding:8px 10px; background:var(--bg-soft); border-radius:3px; font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--primary); line-height:1.5;">
+            deviation = ΣΔ (patient_curve, std_curve)<br>if deviation > threshold → flag
+          </div>
+        </div>
+        <!-- Arrow -->
+        <div style="display:flex; align-items:center; justify-content:center; background:var(--bg-light);">
+          <svg width="60" height="20" viewBox="0 0 60 20"><path d="M0 10 L48 10 M40 4 L48 10 L40 16" stroke="#0F2A5C" stroke-width="2" fill="none"/></svg>
+        </div>
+        <!-- Step 3: Flag -->
+        <div style="background:var(--accent); color:#fff; border:1px solid var(--accent); padding:24px 20px; border-radius:0 6px 6px 0;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; color:#FECACA; letter-spacing:2px;">STEP 03</div>
+          <div style="font-family:'Playfair Display',serif; font-size:24px; font-weight:700; color:#fff; margin:6px 0 12px;">Flag</div>
+          <div style="font-size:12px; color:rgba(255,255,255,0.92); line-height:1.55;">
+            Jika <b>Recovery Deviation Score</b> melebihi ambang batas → picu <b style="color:#FECACA;">Red Flag</b>. Tampilkan grafik anomali sebagai bukti ilmiah untuk reviewer BPJS.
+          </div>
+          <div style="margin-top:14px; padding:8px 10px; background:rgba(0,0,0,0.18); border-radius:3px; font-family:'JetBrains Mono',monospace; font-size:10px; color:#fff; line-height:1.5;">
+            score=0.82 (HIGH)<br>STATUS: RED FLAG → REVIEW
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:24px; display:flex; gap:18px; align-items:center; padding:14px 18px; background:var(--bg-soft); border-radius:4px;">
+      <div style="font-family:'Playfair Display',serif; font-size:14px; font-weight:700; color:var(--primary); min-width:120px;">Anatomi VERA</div>
+      <div style="font-size:12px; color:var(--text-body); line-height:1.55; flex:1;">
+        VERA bukan AI yang menggantikan reviewer manusia. VERA adalah <b>mesin bukti ilmiah</b> — ekstrak data biologis, bandingkan secara matematis, hadirkan anomali sebagai grafik. Reviewer BPJS memutuskan; VERA memberi bukti.
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <div>VERA — Ide Solusi</div>
+    <div class="pagenum">07 / 20</div>
+  </div>
+</section>
+
+<!-- ====================================================================
+     SLIDE 8 — B3b 3 FITUR UTAMA
+     ==================================================================== -->
+<section class="page">
+  <div class="slide-header">
+    <div class="brand">VERA<span class="dot">·</span>Bagian 03</div>
+    <div>Tiga Fitur Utama</div>
+  </div>
+  <div class="slide-body">
+    <div class="eyebrow"><span class="section-num">B03</span> · FITUR INTI</div>
+    <div class="h-section">Tiga Mesin yang Saling Membuktikan.</div>
+    <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:18px; margin-top:24px; height:calc(100% - 130px);">
+      <!-- Fitur 1: LLM Clinical NLP -->
+      <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:6px; padding:22px 20px; display:flex; flex-direction:column;">
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px;">
+          <div style="width:40px; height:40px; background:var(--secondary-soft); border-radius:6px; display:flex; align-items:center; justify-content:center; font-family:'Playfair Display',serif; font-weight:900; font-size:18px; color:var(--secondary);">01</div>
+          <div style="font-size:10px; letter-spacing:2px; color:var(--secondary); font-weight:700;">EXTRACTION ENGINE</div>
+        </div>
+        <div style="font-family:'Playfair Display',serif; font-size:22px; font-weight:700; color:var(--primary); line-height:1.2; margin-bottom:12px;">LLM-Powered<br>Clinical NLP</div>
+        <div style="font-size:12px; color:var(--text-body); line-height:1.6; flex:1;">
+          Menggunakan Large Language Models diakses via <b>OpenRouter/Xyrus</b> untuk ekstrak data objektif dari teks tidak terstruktur. Contoh: <i>"H3: leukosit 8000, trombosit 250rb"</i> → JSON terstruktur siap olah.
+        </div>
+        <div style="margin-top:14px; padding-top:14px; border-top:1px dashed var(--border); font-size:10px; color:var(--text-muted); line-height:1.4;">
+          <b style="color:var(--primary);">Output:</b> JSON {date, leukosit, trombosit, td_s, td_d, suhu, gcs}
+        </div>
+      </div>
+      <!-- Fitur 2: Temporal Anomaly Detector -->
+      <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:6px; padding:22px 20px; display:flex; flex-direction:column;">
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px;">
+          <div style="width:40px; height:40px; background:var(--accent-soft); border-radius:6px; display:flex; align-items:center; justify-content:center; font-family:'Playfair Display',serif; font-weight:900; font-size:18px; color:var(--accent);">02</div>
+          <div style="font-size:10px; letter-spacing:2px; color:var(--accent); font-weight:700;">DETECTION LOGIC</div>
+        </div>
+        <div style="font-family:'Playfair Display',serif; font-size:22px; font-weight:700; color:var(--primary); line-height:1.2; margin-bottom:12px;">Temporal Anomaly<br>Detector</div>
+        <div style="font-size:12px; color:var(--text-body); line-height:1.6; flex:1;">
+          Logika <b>Time-Series</b> membandingkan kurva pasien vs standar medis. Jika lab normal di H3 tapi klaim sampai H7, sistem menghitung <b>Recovery Deviation Score</b> dan memicu <b style="color:var(--accent);">Red Flag</b>.
+        </div>
+        <div style="margin-top:14px; padding-top:14px; border-top:1px dashed var(--border); font-size:10px; color:var(--text-muted); line-height:1.4;">
+          <b style="color:var(--primary);">Output:</b> Recovery Deviation Score 0.0–1.0 + grafik anomali
+        </div>
+      </div>
+      <!-- Fitur 3: Reviewer Dashboard -->
+      <div style="background:var(--primary); color:#fff; border:1px solid var(--primary); border-radius:6px; padding:22px 20px; display:flex; flex-direction:column;">
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px;">
+          <div style="width:40px; height:40px; background:rgba(14,165,233,0.22); border:1px solid var(--secondary); border-radius:6px; display:flex; align-items:center; justify-content:center; font-family:'Playfair Display',serif; font-weight:900; font-size:18px; color:var(--secondary);">03</div>
+          <div style="font-size:10px; letter-spacing:2px; color:var(--secondary); font-weight:700;">REVIEWER INTERFACE</div>
+        </div>
+        <div style="font-family:'Playfair Display',serif; font-size:22px; font-weight:700; color:#fff; line-height:1.2; margin-bottom:12px;">Reviewer<br>Dashboard</div>
+        <div style="font-size:12px; color:rgba(255,255,255,0.88); line-height:1.6; flex:1;">
+          UI web menampilkan grafik kurva anomali sebagai <b>"Bukti Ilmiah"</b> untuk Medical Reviewer BPJS. Reviewer lihat skor + grafik, bukan teks panjang.
+        </div>
+        <div style="margin-top:14px; padding-top:14px; border-top:1px dashed rgba(255,255,255,0.2); font-size:10px; color:rgba(255,255,255,0.65); line-height:1.4;">
+          <b style="color:var(--secondary);">Output:</b> Dashboard Vercel — daftar Red Flag + audit trail
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:18px; padding:12px 16px; background:var(--bg-soft); border-left:3px solid var(--primary); border-radius:0 4px 4px 0; font-size:12px; color:var(--text-body); line-height:1.55;">
+      <b style="color:var(--primary);">Kunci slide ini:</b> Juri dapat memahami apa yang VERA bangun &amp; mengapa lebih baik — dalam waktu <b>30 detik membaca</b>. Tiga mesin: ekstrak → deteksi → sajikan.
+    </div>
+  </div>
+  <div class="slide-footer">
+    <div>VERA — Tiga Fitur Utama</div>
+    <div class="pagenum">08 / 20</div>
+  </div>
+</section>
+
+<!-- ====================================================================
+     SLIDE 9 — B3c MOCKUP DASHBOARD REVIEWER
+     ==================================================================== -->
+<section class="page">
+  <div class="slide-header">
+    <div class="brand">VERA<span class="dot">·</span>Bagian 03</div>
+    <div>Mockup Dashboard Reviewer</div>
+  </div>
+  <div class="slide-body">
+    <div class="eyebrow"><span class="section-num">B03</span> · TAMPILAN PENGUNA AKHIR</div>
+    <div class="h-section">Reviewer Dashboard — Bukti Ilmiah,<br>Bukan Teks Panjang.</div>
+    <div style="margin-top:18px; background:var(--bg-card); border:1px solid var(--border-strong); border-radius:6px; box-shadow:0 6px 20px rgba(15,42,92,0.08); overflow:hidden;">
+      <!-- Browser top bar mock -->
+      <div style="background:var(--bg-soft); padding:8px 14px; display:flex; align-items:center; gap:8px; border-bottom:1px solid var(--border);">
+        <div style="width:10px; height:10px; border-radius:50%; background:#FCA5A5;"></div>
+        <div style="width:10px; height:10px; border-radius:50%; background:#FDE68A;"></div>
+        <div style="width:10px; height:10px; border-radius:50%; background:#86EFAC;"></div>
+        <div style="margin-left:14px; font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--text-muted); padding:3px 10px; background:#fff; border:1px solid var(--border); border-radius:3px;">vera.vercel.app/reviewer</div>
+      </div>
+      <!-- Dashboard body -->
+      <div style="display:grid; grid-template-columns: 320px 1fr; height:330px;">
+        <!-- Left: Patient list -->
+        <div style="border-right:1px solid var(--border); display:flex; flex-direction:column;">
+          <div style="padding:10px 14px; background:var(--primary); color:#fff; font-size:11px; letter-spacing:1.5px; text-transform:uppercase; font-weight:700;">Daftar Pasien Red Flag</div>
+          <div style="flex:1; padding:6px 0;">
+            <div style="padding:8px 14px; background:var(--accent-soft); border-left:3px solid var(--accent); display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <div style="font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; color:var(--primary);">PNEU-2026-0312</div>
+                <div style="font-size:10px; color:var(--text-muted);">Pneumonia · H7 klaim</div>
+              </div>
+              <div style="font-family:'JetBrains Mono',monospace; font-size:14px; font-weight:700; color:var(--accent);">0.82</div>
+            </div>
+            <div style="padding:8px 14px; border-left:3px solid var(--warning);">
+              <div style="display:flex; justify-content:space-between;">
+                <div>
+                  <div style="font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; color:var(--primary);">STR-2026-0418</div>
+                  <div style="font-size:10px; color:var(--text-muted);">Stroke · H10 klaim</div>
+                </div>
+                <div style="font-family:'JetBrains Mono',monospace; font-size:14px; font-weight:700; color:var(--warning);">0.64</div>
+              </div>
+            </div>
+            <div style="padding:8px 14px; opacity:0.6;">
+              <div style="display:flex; justify-content:space-between;">
+                <div>
+                  <div style="font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; color:var(--primary);">CHF-2026-0522</div>
+                  <div style="font-size:10px; color:var(--text-muted);">CHF · H6 klaim</div>
+                </div>
+                <div style="font-family:'JetBrains Mono',monospace; font-size:14px; font-weight:700; color:var(--success);">0.21</div>
+              </div>
+            </div>
+            <div style="padding:8px 14px; opacity:0.6;">
+              <div style="display:flex; justify-content:space-between;">
+                <div>
+                  <div style="font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; color:var(--primary);">COPD-2026-0601</div>
+                  <div style="font-size:10px; color:var(--text-muted);">COPD · H5 klaim</div>
+                </div>
+                <div style="font-family:'JetBrains Mono',monospace; font-size:14px; font-weight:700; color:var(--success);">0.18</div>
+              </div>
+            </div>
+          </div>
+          <div style="padding:8px 14px; border-top:1px solid var(--border); font-size:9px; color:var(--text-muted);">4 dari 24 pasien · Disaring</div>
+        </div>
+        <!-- Right: Detail panel -->
+        <div style="padding:14px 18px; display:flex; flex-direction:column; gap:10px;">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+            <div>
+              <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-muted);">PNEU-2026-0312 · Pneumonia</div>
+              <div style="font-family:'Playfair Display',serif; font-size:16px; font-weight:700; color:var(--primary); margin-top:2px;">Recovery Deviation Score: <span style="color:var(--accent);">0.82 (HIGH)</span></div>
+            </div>
+            <div style="display:flex; gap:6px;">
+              <button style="padding:4px 10px; background:var(--accent); color:#fff; border:none; border-radius:3px; font-size:10px; font-weight:700; letter-spacing:1px; cursor:pointer;">Bukti Ilmiah</button>
+              <button style="padding:4px 10px; background:var(--bg-soft); color:var(--primary); border:1px solid var(--border); border-radius:3px; font-size:10px; font-weight:600; letter-spacing:1px;">Audit Trail</button>
+            </div>
+          </div>
+          <!-- Mini chart -->
+          <div style="background:var(--bg-soft); padding:10px 12px; border-radius:4px; flex:1;">
+            <div style="font-size:10px; color:var(--text-muted); letter-spacing:1px; text-transform:uppercase; margin-bottom:6px; font-weight:600;">Kurva Pemulihan — Pasien vs Standar</div>
+            <svg width="100%" height="140" viewBox="0 0 480 140" xmlns="http://www.w3.org/2000/svg">
+              <defs><linearGradient id="rf2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#DC2626" stop-opacity="0.25"/><stop offset="1" stop-color="#DC2626" stop-opacity="0.05"/></linearGradient></defs>
+              <line x1="30" y1="120" x2="460" y2="120" stroke="#94A3B8" stroke-width="1"/>
+              <line x1="30" y1="20" x2="30" y2="120" stroke="#94A3B8" stroke-width="1"/>
+              <rect x="180" y="20" width="180" height="100" fill="url(#rf2)"/>
+              <text x="30" y="135" font-family="JetBrains Mono" font-size="9" fill="#64748B" text-anchor="middle">H1</text>
+              <text x="180" y="135" font-family="JetBrains Mono" font-size="9" fill="#64748B" text-anchor="middle">H3</text>
+              <text x="360" y="135" font-family="JetBrains Mono" font-size="9" fill="#DC2626" text-anchor="middle" font-weight="700">H7</text>
+              <text x="450" y="135" font-family="JetBrains Mono" font-size="9" fill="#64748B" text-anchor="middle">H10</text>
+              <path d="M30 30 Q 100 55 180 90 T 320 115 L 460 118" stroke="#16A34A" stroke-width="2.5" fill="none"/>
+              <path d="M30 30 Q 100 55 180 90 L 360 88" stroke="#DC2626" stroke-width="2.5" fill="none" stroke-dasharray="4,3"/>
+              <circle cx="360" cy="88" r="5" fill="#DC2626"/>
+              <text x="180" y="60" font-family="Inter" font-size="9" fill="#16A34A" font-weight="700">Standar Pneumonia</text>
+              <text x="220" y="85" font-family="Inter" font-size="9" fill="#DC2626" font-weight="700">Klaim RS (anomali)</text>
+            </svg>
+          </div>
+          <div style="font-size:10px; color:var(--text-muted); line-height:1.4;">
+            <b style="color:var(--accent);">Catatan VERA:</b> Lab normal sejak H3 (leukosit 8000, trombosit 250rb). Klaim H7 → selisih 4 hari berpotensi fiktif. Reviewer disarankan audit dokter &amp; indikasi rawat.
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:14px; font-size:11px; color:var(--text-muted); line-height:1.5; text-align:center;">
+      Mockup UX — bukan screenshot final. Prinsip UI: <b>data-to-ink ratio tinggi</b>, reviewer fokus pada skor + grafik, keputusan tetap di manusia.
+    </div>
+  </div>
+  <div class="slide-footer">
+    <div>VERA — Mockup Dashboard Reviewer</div>
+    <div class="pagenum">09 / 20</div>
+  </div>
+</section>
+
+<!-- ====================================================================
+     SLIDE 10 — B4 ARSITEKTUR SERVERLESS AI STACK
+     ==================================================================== -->
+<section class="page">
+  <div class="slide-header">
+    <div class="brand">VERA<span class="dot">·</span>Bagian 04</div>
+    <div>Arsitektur Serverless AI</div>
+  </div>
+  <div class="slide-body">
+    <div class="eyebrow"><span class="section-num">B04</span> · ARSITEKTUR SISTEM</div>
+    <div class="h-section">Serverless AI Stack — <br>Zero-Maintenance, Scale Otomatis.</div>
+    <div style="margin-top:18px; background:var(--bg-card); border:1px solid var(--border); border-radius:6px; padding:24px;">
+      <svg width="100%" height="320" viewBox="0 0 1120 320" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arrowBlue" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+            <path d="M0 0 L10 5 L0 10 z" fill="#0F2A5C"/>
+          </marker>
+        </defs>
+        <!-- 4 main blocks -->
+        <!-- Block 1: Frontend/API Gateway -->
+        <rect x="40" y="80" width="200" height="160" rx="8" fill="#EFF6FF" stroke="#0EA5E9" stroke-width="1.5"/>
+        <text x="140" y="105" font-family="Inter" font-size="11" fill="#0EA5E9" text-anchor="middle" font-weight="700" letter-spacing="2">LAYER 01 · FRONTEND</text>
+        <text x="140" y="135" font-family="Playfair Display" font-size="17" fill="#0F2A5C" text-anchor="middle" font-weight="700">Vercel + Next.js</text>
+        <text x="140" y="160" font-family="Inter" font-size="11" fill="#475569" text-anchor="middle">API Gateway</text>
+        <text x="140" y="178" font-family="Inter" font-size="11" fill="#475569" text-anchor="middle">Vercel Cron Jobs</text>
+        <text x="140" y="196" font-family="Inter" font-size="11" fill="#475569" text-anchor="middle">Edge Functions</text>
+        <text x="140" y="222" font-family="JetBrains Mono" font-size="10" fill="#0F2A5C" text-anchor="middle" font-weight="600">↻ Sinkronisasi harian</text>
+
+        <!-- Arrow 1→2 -->
+        <line x1="248" y1="160" x2="290" y2="160" stroke="#0F2A5C" stroke-width="2" marker-end="url(#arrowBlue)"/>
+
+        <!-- Block 2: Database -->
+        <rect x="300" y="80" width="200" height="160" rx="8" fill="#F0FDF4" stroke="#16A34A" stroke-width="1.5"/>
+        <text x="400" y="105" font-family="Inter" font-size="11" fill="#16A34A" text-anchor="middle" font-weight="700" letter-spacing="2">LAYER 02 · DATABASE</text>
+        <text x="400" y="135" font-family="Playfair Display" font-size="17" fill="#0F2A5C" text-anchor="middle" font-weight="700">Neon PostgreSQL</text>
+        <text x="400" y="160" font-family="Inter" font-size="11" fill="#475569" text-anchor="middle">Data episodik anonim</text>
+        <text x="400" y="178" font-family="Inter" font-size="11" fill="#475569" text-anchor="middle">Hasil ekstraksi AI</text>
+        <text x="400" y="196" font-family="Inter" font-size="11" fill="#475569" text-anchor="middle">Audit log + deviation score</text>
+        <text x="400" y="222" font-family="JetBrains Mono" font-size="10" fill="#0F2A5C" text-anchor="middle" font-weight="600">⎇ Branching otomatis</text>
+
+        <!-- Arrow 2→3 (up to LLM) -->
+        <path d="M510 160 L 540 160 L 540 60 L 660 60" stroke="#0F2A5C" stroke-width="2" fill="none" marker-end="url(#arrowBlue)"/>
+        <!-- Arrow back down -->
+        <path d="M840 60 L 960 60 L 960 160 L 938 160" stroke="#0F2A5C" stroke-width="2" fill="none" marker-end="url(#arrowBlue)"/>
+
+        <!-- Block 3: AI Engine (top center) -->
+        <rect x="540" y="20" width="300" height="80" rx="8" fill="#FEF2F2" stroke="#DC2626" stroke-width="1.5"/>
+        <text x="690" y="42" font-family="Inter" font-size="11" fill="#DC2626" text-anchor="middle" font-weight="700" letter-spacing="2">LAYER 03 · AI ENGINE</text>
+        <text x="690" y="62" font-family="Playfair Display" font-size="15" fill="#0F2A5C" text-anchor="middle" font-weight="700">OpenRouter + Xyrus Router</text>
+        <text x="690" y="84" font-family="Inter" font-size="10" fill="#475569" text-anchor="middle">LLM gateway → model termurah/tercepat · Strict Prompting · JSON schema</text>
+
+        <!-- Block 4: Version Control -->
+        <rect x="940" y="80" width="140" height="160" rx="8" fill="#F8FAFC" stroke="#0F2A5C" stroke-width="1.5"/>
+        <text x="1010" y="105" font-family="Inter" font-size="11" fill="#0F2A5C" text-anchor="middle" font-weight="700" letter-spacing="2">LAYER 04</text>
+        <text x="1010" y="135" font-family="Playfair Display" font-size="15" fill="#0F2A5C" text-anchor="middle" font-weight="700">GitHub</text>
+        <text x="1010" y="160" font-family="Inter" font-size="10" fill="#475569" text-anchor="middle">Version Control</text>
+        <text x="1010" y="180" font-family="Inter" font-size="10" fill="#475569" text-anchor="middle">CI/CD via Actions</text>
+        <text x="1010" y="208" font-family="JetBrains Mono" font-size="9" fill="#0F2A5C" text-anchor="middle" font-weight="600">push main →</text>
+        <text x="1010" y="222" font-family="JetBrains Mono" font-size="9" fill="#0F2A5C" text-anchor="middle" font-weight="600">auto deploy</text>
+
+        <!-- Arrow from GitHub to Vercel (deploy) -->
+        <path d="M1010 80 L 1010 40 L 240 40 L 240 80" stroke="#16A34A" stroke-width="2" stroke-dasharray="4,3" fill="none" marker-end="url(#arrowBlue)"/>
+        <text x="600" y="34" font-family="Inter" font-size="10" fill="#16A34A" text-anchor="middle" font-weight="600">↻ Deploy otomatis + migrasi schema</text>
+
+        <!-- Bottom labels -->
+        <text x="40" y="280" font-family="Inter" font-size="10" fill="#64748B" font-weight="600">TIDAK ADA SERVER FISIK</text>
+        <text x="40" y="298" font-family="Inter" font-size="10" fill="#64748B">Zero maintenance · bayar per token</text>
+
+        <text x="300" y="280" font-family="Inter" font-size="10" fill="#64748B" font-weight="600">DATA STRIPPING DI EDGE</text>
+        <text x="300" y="298" font-family="Inter" font-size="10" fill="#64748B">Sebelum ke LLM: NIK/nama di-mask</text>
+
+        <text x="540" y="280" font-family="Inter" font-size="10" fill="#64748B" font-weight="600">JSON SCHEMA KETAT</text>
+        <text x="540" y="298" font-family="Inter" font-size="10" fill="#64748B">Validasi output LLM · anti-hallucination</text>
+      </svg>
+    </div>
+    <div style="margin-top:14px; display:grid; grid-template-columns: 1fr 1fr; gap:18px; font-size:11px; color:var(--text-body); line-height:1.5;">
+      <div><b style="color:var(--primary);">Mengapa stack ini:</b> BPJS tidak perlu investasi server fisik mahal. Vercel + Neon + LLM API = deploy dalam 1 hari, biaya operasional LLM bayar per token (pay-as-you-go).</div>
+      <div><b style="color:var(--primary);">Skalabilitas:</b> Vercel Edge Functions menangani beban real-time; Neon auto-scale sesuai volume klaim BPJS. Tidak ada single point of failure.</div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <div>VERA — Arsitektur Serverless AI Stack</div>
+    <div class="pagenum">10 / 20</div>
+  </div>
+</section>
+<!-- ====================================================================
+     SLIDE 11 — B4b ALUR DATA PIPELINE
+     ==================================================================== -->
+<section class="page">
+  <div class="slide-header">
+    <div class="brand">VERA<span class="dot">·</span>Bagian 04</div>
+    <div>Alur Data Pipeline</div>
+  </div>
+  <div class="slide-body">
+    <div class="eyebrow"><span class="section-num">B04</span> · ALUR DATA HULU → HILIR</div>
+    <div class="h-section">Dari CSV/HL7 BPJS hingga<br>Dashboard Red Flag Reviewer.</div>
+    <div style="margin-top:24px; background:var(--bg-card); border:1px solid var(--border); border-radius:6px; padding:28px 24px;">
+      <div style="display:grid; grid-template-columns: 1fr 40px 1fr 40px 1fr; gap:0; align-items:stretch;">
+        <!-- INPUT -->
+        <div style="display:flex; flex-direction:column; padding:14px 16px; background:var(--secondary-soft); border-radius:6px; border-top:3px solid var(--secondary);">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700; color:var(--secondary); letter-spacing:2px; margin-bottom:6px;">INPUT</div>
+          <div style="font-family:'Playfair Display',serif; font-size:18px; font-weight:700; color:var(--primary); margin-bottom:10px;">Sumber Data BPJS</div>
+          <ul style="list-style:none; font-size:12px; color:var(--text-body); line-height:1.7;">
+            <li>📋 CSV/HL7 dari BPJS</li>
+            <li>→ API Vercel menerima</li>
+            <li>→ Simpan ke Neon DB</li>
+          </ul>
+          <div style="margin-top:10px; padding:6px 8px; background:#fff; border:1px solid var(--border); border-radius:3px; font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--primary); line-height:1.4;">
+            {sep_id, dx_code, emr_text, admit, discharge}
+          </div>
+        </div>
+        <!-- Arrow -->
+        <div style="display:flex; align-items:center; justify-content:center;">
+          <svg width="34" height="20" viewBox="0 0 34 20"><path d="M0 10 L24 10 M18 4 L24 10 L18 16" stroke="#0F2A5C" stroke-width="2" fill="none"/></svg>
+        </div>
+        <!-- PROSES -->
+        <div style="display:flex; flex-direction:column; padding:14px 16px; background:var(--accent-soft); border-radius:6px; border-top:3px solid var(--accent);">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700; color:var(--accent); letter-spacing:2px; margin-bottom:6px;">PROSES</div>
+          <div style="font-family:'Playfair Display',serif; font-size:18px; font-weight:700; color:var(--primary); margin-bottom:10px;">AI Engine &amp; Time-Series</div>
+          <ul style="list-style:none; font-size:12px; color:var(--text-body); line-height:1.7;">
+            <li>🤖 Teks medis → LLM via Router</li>
+            <li>→ Ekstraksi JSON terstruktur</li>
+            <li>→ Hitung Deviation Score</li>
+            <li>→ Simpan + Audit ke Neon</li>
+          </ul>
+          <div style="margin-top:10px; padding:6px 8px; background:#fff; border:1px solid var(--border); border-radius:3px; font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--primary); line-height:1.4;">
+            prompt="ekstrak {date, leuko, trombo, td}"; validate(json_schema)
+          </div>
+        </div>
+        <!-- Arrow -->
+        <div style="display:flex; align-items:center; justify-content:center;">
+          <svg width="34" height="20" viewBox="0 0 34 20"><path d="M0 10 L24 10 M18 4 L24 10 L18 16" stroke="#0F2A5C" stroke-width="2" fill="none"/></svg>
+        </div>
+        <!-- OUTPUT -->
+        <div style="display:flex; flex-direction:column; padding:14px 16px; background:var(--primary); color:#fff; border-radius:6px; border-top:3px solid var(--secondary);">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700; color:var(--secondary); letter-spacing:2px; margin-bottom:6px;">OUTPUT</div>
+          <div style="font-family:'Playfair Display',serif; font-size:18px; font-weight:700; color:#fff; margin-bottom:10px;">Reviewer Dashboard</div>
+          <ul style="list-style:none; font-size:12px; color:rgba(255,255,255,0.92); line-height:1.7;">
+            <li>📊 Dashboard Vercel</li>
+            <li>→ Grafik pasien Red Flag</li>
+            <li>→ Skor + Bukti Ilmiah</li>
+          </ul>
+          <div style="margin-top:10px; padding:6px 8px; background:rgba(0,0,0,0.2); border-radius:3px; font-family:'JetBrains Mono',monospace; font-size:9px; color:#fff; line-height:1.4;">
+            score=0.82 → REVIEW_QUEUE
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:18px; display:grid; grid-template-columns: 1fr 1fr; gap:18px;">
+      <div style="padding:14px 18px; background:var(--bg-soft); border-left:3px solid var(--secondary); border-radius:0 4px 4px 0; font-size:12px; color:var(--text-body); line-height:1.55;">
+        <b style="color:var(--primary);">Asumsi &amp; Keterbatasan:</b> VERA memerlukan EMR teks dapat diakses (CSV/HL7 export). Untuk RS yang belum digital, VERA menyediakan adapter form input manual sebagai jembatan.
+      </div>
+      <div style="padding:14px 18px; background:var(--bg-soft); border-left:3px solid var(--accent); border-radius:0 4px 4px 0; font-size:12px; color:var(--text-body); line-height:1.55;">
+        <b style="color:var(--primary);">Keamanan sejak awal:</b> Data stripping di Vercel Edge sebelum LLM. Nama/NIK/alamat di-mask. LLM hanya memproses teks medis murni (mis. "H3: TD 120/80, leukosit 8000").
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <div>VERA — Alur Data Pipeline</div>
+    <div class="pagenum">11 / 20</div>
+  </div>
+</section>
+
+<!-- ====================================================================
+     SLIDE 12 — B4c CONTOH PROMPT & JSON OUTPUT
+     ==================================================================== -->
+<section class="page">
+  <div class="slide-header">
+    <div class="brand">VERA<span class="dot">·</span>Bagian 04</div>
+    <div>Contoh Prompt &amp; JSON Output</div>
+  </div>
+  <div class="slide-body">
+    <div class="eyebrow"><span class="section-num">B04</span> · STRICT PROMPTING + JSON SCHEMA</div>
+    <div class="h-section">Bagaimana LLM mengubah teks EMR<br>menjadi data terstruktur.</div>
+    <div style="margin-top:18px; display:grid; grid-template-columns: 1fr 1fr; gap:18px; height:calc(100% - 130px);">
+      <!-- LEFT: Prompt + Input -->
+      <div style="display:flex; flex-direction:column; gap:14px;">
+        <div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700; color:var(--secondary); letter-spacing:2px; margin-bottom:6px;">⌥ PROMPT</div>
+          <div style="background:#1E293B; color:#E2E8F0; padding:14px 16px; border-radius:6px; font-family:'JetBrains Mono',monospace; font-size:11px; line-height:1.55;">
+            <span style="color:#94A3B8;">//</span> <span style="color:#94A3B8;">VERA strict extraction prompt</span><br>
+            <span style="color:#FDE68A;">"Ekstrak tanggal, nilai leukosit, dan</span><br>
+            <span style="color:#FDE68A;">nilai trombosit dari teks rekam medis ini.</span><br>
+            <span style="color:#FDE68A;">Output HANYA format JSON</span><br>
+            <span style="color:#FDE68A;">{date, leukosit, trombosit}.</span><br>
+            <span style="color:#FDE68A;">Tidak ada teks lain. Jika nilai tidak</span><br>
+            <span style="color:#FDE68A;">ditemukan, isi null. Jangan mengarang."</span>
+          </div>
+        </div>
+        <div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700; color:var(--primary); letter-spacing:2px; margin-bottom:6px;">⌥ INPUT (teks EMR pasien)</div>
+          <div style="background:#FFFBEB; border:1px solid #FDE68A; padding:14px 16px; border-radius:6px; font-family:'JetBrains Mono',monospace; font-size:11px; line-height:1.6; color:#92400E;">
+            "H3: Pasien sadar penuh, GCS 15.<br>
+            TD 120/80, Nadi 78, Suhu 36.7°C.<br>
+            Lab: Leukosit 8000, Trombosit 250.000.<br>
+            Dokter: kondisi stabil, rencana observasi lanjut."
+          </div>
+        </div>
+      </div>
+      <!-- RIGHT: Output + Validation -->
+      <div style="display:flex; flex-direction:column; gap:14px;">
+        <div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700; color:var(--success); letter-spacing:2px; margin-bottom:6px;">⌥ OUTPUT JSON (divalidasi)</div>
+          <div style="background:#052E16; color:#BBF7D0; padding:14px 16px; border-radius:6px; font-family:'JetBrains Mono',monospace; font-size:11px; line-height:1.6;">
+            {<br>
+            &nbsp;&nbsp;<span style="color:#86EFAC;">"date"</span>: <span style="color:#FDE68A;">"H3"</span>,<br>
+            &nbsp;&nbsp;<span style="color:#86EFAC;">"leukosit"</span>: <span style="color:#FDE68A;">8000</span>,<br>
+            &nbsp;&nbsp;<span style="color:#86EFAC;">"trombosit"</span>: <span style="color:#FDE68A;">250000</span>,<br>
+            &nbsp;&nbsp;<span style="color:#86EFAC;">"td_s"</span>: <span style="color:#FDE68A;">120</span>,<br>
+            &nbsp;&nbsp;<span style="color:#86EFAC;">"td_d"</span>: <span style="color:#FDE68A;">80</span>,<br>
+            &nbsp;&nbsp;<span style="color:#86EFAC;">"suhu"</span>: <span style="color:#FDE68A;">36.7</span>,<br>
+            &nbsp;&nbsp;<span style="color:#86EFAC;">"gcs"</span>: <span style="color:#FDE68A;">15</span><br>
+            }
+          </div>
+        </div>
+        <div style="padding:14px 18px; background:var(--accent-soft); border-left:3px solid var(--accent); border-radius:0 4px 4px 0;">
+          <div style="font-family:'Playfair Display',serif; font-weight:700; color:var(--primary); font-size:14px; margin-bottom:6px;">Anti-Hallucination Layer</div>
+          <div style="font-size:11px; color:var(--text-body); line-height:1.55;">
+            Output divalidasi dengan JSON Schema ketat di backend Vercel. Jika format tidak sesuai → retry dengan prompt klarifikasi. Jika masih gagal → field diisi <b>null</b> (TIDAK diinterpolasi). Tidak ada ruang untuk LLM mengarang angka lab.
+          </div>
+        </div>
+        <div style="padding:12px 16px; background:var(--bg-soft); border-radius:4px; font-size:11px; color:var(--text-muted); line-height:1.5;">
+          <b style="color:var(--primary);">Router strategy:</b> OpenRouter/Xyrus memilih model termurah/tercepat untuk task ekstraksi sederhana. Biaya ~$0.0002/panggilan → skalabel untuk jutaan klaim/bulan.
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <div>VERA — Contoh Prompt &amp; JSON Output</div>
+    <div class="pagenum">12 / 20</div>
+  </div>
+</section>
+
+<!-- ====================================================================
+     SLIDE 13 — B5 TINGKAT KEMATANGAN
+     ==================================================================== -->
+<section class="page">
+  <div class="slide-header">
+    <div class="brand">VERA<span class="dot">·</span>Bagian 05</div>
+    <div>Tingkat Kematangan</div>
+  </div>
+  <div class="slide-body">
+    <div class="eyebrow"><span class="section-num">B05</span> · STATUS SAAT INI</div>
+    <div class="h-section">Prototype MVP — Siap Demo,<br>Bukan Sekadar Mockup Figma.</div>
+    <div style="margin-top:24px; background:var(--bg-card); border:1px solid var(--border); border-radius:6px; padding:24px 28px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+        <div style="font-family:'Playfair Display',serif; font-size:14px; font-weight:700; color:var(--primary);">Maturity Meter</div>
+        <div style="font-size:10px; color:var(--text-muted); letter-spacing:1.5px; text-transform:uppercase; font-weight:600;">5-LEVEL · DARI IDE → PRODUK</div>
+      </div>
+      <div style="display:grid; grid-template-columns: repeat(5, 1fr); gap:8px; margin-bottom:10px;">
+        <div style="height:6px; background:var(--border); border-radius:3px;"></div>
+        <div style="height:6px; background:var(--border); border-radius:3px;"></div>
+        <div style="height:6px; background:var(--accent); border-radius:3px; box-shadow:0 0 0 3px rgba(220,38,38,0.18);"></div>
+        <div style="height:6px; background:var(--border); border-radius:3px;"></div>
+        <div style="height:6px; background:var(--border); border-radius:3px;"></div>
+      </div>
+      <div style="display:grid; grid-template-columns: repeat(5, 1fr); gap:8px; text-align:center; font-size:10px; color:var(--text-muted); font-weight:600; letter-spacing:1px; text-transform:uppercase;">
+        <div>Ide</div>
+        <div>Mockup</div>
+        <div style="color:var(--accent); font-weight:800;">● Prototype</div>
+        <div>MVP</div>
+        <div>Produk</div>
+      </div>
+    </div>
+    <div style="margin-top:18px;">
+      <div style="font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700; color:var(--secondary); letter-spacing:2px; margin-bottom:8px;">⌥ FITUR YANG SUDAH BERJALAN</div>
+      <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:14px;">
+        <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:6px; padding:16px 18px;">
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+            <div style="width:24px; height:24px; background:var(--success); color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700;">✓</div>
+            <div style="font-family:'Playfair Display',serif; font-weight:700; font-size:14px; color:var(--primary);">Upload CSV</div>
+          </div>
+          <div style="font-size:11px; color:var(--text-body); line-height:1.5;">Form upload CSV berisi rekam medis sintetis (Pneumonia/Stroke) ke API Vercel — berjalan end-to-end.</div>
+        </div>
+        <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:6px; padding:16px 18px;">
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+            <div style="width:24px; height:24px; background:var(--success); color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700;">✓</div>
+            <div style="font-family:'Playfair Display',serif; font-weight:700; font-size:14px; color:var(--primary);">LLM Ekstraksi</div>
+          </div>
+          <div style="font-size:11px; color:var(--text-body); line-height:1.5;">LLM via OpenRouter/Xyrus berhasil ekstrak variabel lab dari teks tidak terstruktur, divalidasi JSON schema.</div>
+        </div>
+        <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:6px; padding:16px 18px;">
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+            <div style="width:24px; height:24px; background:var(--success); color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700;">✓</div>
+            <div style="font-family:'Playfair Display',serif; font-weight:700; font-size:14px; color:var(--primary);">Line Chart Anomali</div>
+          </div>
+          <div style="font-size:11px; color:var(--text-body); line-height:1.5;">Grafik Line Chart menampilkan anomali waktu rawat (tampilan visual bukti penipuan) di dashboard.</div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:18px; padding:14px 18px; background:var(--primary); color:#fff; border-radius:6px; display:flex; align-items:center; gap:18px;">
+      <div style="font-family:'Playfair Display',serif; font-size:18px; font-weight:700; color:#fff; flex:1;">Aplikasi web live di Vercel — bisa diakses juri.</div>
+      <div style="font-size:11px; color:rgba(255,255,255,0.7); letter-spacing:1.5px; text-transform:uppercase;">VERA · 2026</div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <div>VERA — Tingkat Kematangan</div>
+    <div class="pagenum">13 / 20</div>
+  </div>
+</section>
+
+<!-- ====================================================================
+     SLIDE 14 — B5b MOCKUP KURVA ANOMALI
+     ==================================================================== -->
+<section class="page">
+  <div class="slide-header">
+    <div class="brand">VERA<span class="dot">·</span>Bagian 05</div>
+    <div>Mockup Kurva Anomali</div>
+  </div>
+  <div class="slide-body">
+    <div class="eyebrow"><span class="section-num">B05</span> · BUKTI ILMIAH VISUAL</div>
+    <div class="h-section">Recovery Deviation Score —<br>Bukti Matematis untuk Reviewer.</div>
+    <div style="margin-top:18px; background:var(--bg-card); border:1px solid var(--border); border-radius:6px; padding:24px;">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px;">
+        <div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-muted); letter-spacing:1.5px; font-weight:600;">PASIEN: PNEU-2026-0312 · PNEUMONIA · RAWAT 7 HARI</div>
+          <div style="font-family:'Playfair Display',serif; font-size:22px; font-weight:700; color:var(--primary); margin-top:4px;">Recovery Deviation Score: <span style="color:var(--accent);">0.82 (HIGH ANOMALY)</span></div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:10px; color:var(--text-muted); letter-spacing:1.5px; text-transform:uppercase; font-weight:600;">SELISIH HARI</div>
+          <div style="font-family:'Playfair Display',serif; font-size:32px; font-weight:900; color:var(--accent); line-height:1;">+4</div>
+          <div style="font-size:10px; color:var(--text-muted);">hari (H3 → H7)</div>
+        </div>
+      </div>
+      <svg width="100%" height="280" viewBox="0 0 1080 280" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="rf3" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#DC2626" stop-opacity="0.22"/>
+            <stop offset="1" stop-color="#DC2626" stop-opacity="0.04"/>
+          </linearGradient>
+          <pattern id="grid3" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#E2E8F0" stroke-width="0.5"/>
+          </pattern>
+        </defs>
+        <rect width="1080" height="280" fill="#FAFAFA"/>
+        <rect width="1080" height="280" fill="url(#grid3)"/>
+        <!-- Anomaly zone shading -->
+        <rect x="280" y="20" width="320" height="240" fill="url(#rf3)"/>
+        <text x="440" y="40" font-family="Inter" font-size="11" fill="#DC2626" text-anchor="middle" font-weight="700">ANOMALY ZONE (H3 → H7)</text>
+        <!-- Y axis -->
+        <line x1="60" y1="20" x2="60" y2="240" stroke="#94A3B8" stroke-width="1"/>
+        <text x="50" y="25" font-family="JetBrains Mono" font-size="9" fill="#64748B" text-anchor="end">100</text>
+        <text x="50" y="130" font-family="JetBrains Mono" font-size="9" fill="#64748B" text-anchor="end">50</text>
+        <text x="50" y="240" font-family="JetBrains Mono" font-size="9" fill="#64748B" text-anchor="end">0</text>
+        <text x="20" y="130" font-family="Inter" font-size="10" fill="#64748B" text-anchor="middle" transform="rotate(-90 20 130)">Tingkat Keparahan</text>
+        <!-- X axis -->
+        <line x1="60" y1="240" x2="1060" y2="240" stroke="#94A3B8" stroke-width="1"/>
+        <text x="60" y="260" font-family="JetBrains Mono" font-size="10" fill="#64748B" text-anchor="middle">H1</text>
+        <text x="280" y="260" font-family="JetBrains Mono" font-size="10" fill="#16A34A" text-anchor="middle" font-weight="700">H3</text>
+        <text x="600" y="260" font-family="JetBrains Mono" font-size="10" fill="#DC2626" text-anchor="middle" font-weight="700">H7</text>
+        <text x="940" y="260" font-family="JetBrains Mono" font-size="10" fill="#64748B" text-anchor="middle">H10</text>
+        <text x="540" y="276" font-family="Inter" font-size="10" fill="#64748B" text-anchor="middle">Hari Rawat (H = Hari ke-)</text>
+        <!-- Normal recovery curve (green) -->
+        <path d="M60 30 Q 170 70 280 140 Q 420 210 600 230 L 1060 232" stroke="#16A34A" stroke-width="3" fill="none"/>
+        <text x="120" y="50" font-family="Inter" font-size="11" fill="#16A34A" font-weight="700">Kurva Standar Pneumonia</text>
+        <text x="120" y="65" font-family="Inter" font-size="9" fill="#16A34A">Lab normal di H3, pulang direkomendasikan H5-H7</text>
+        <!-- Claimed stay curve (red, dashed, flat) -->
+        <path d="M60 30 Q 170 70 280 140 L 600 140" stroke="#DC2626" stroke-width="3" fill="none" stroke-dasharray="6,4"/>
+        <text x="380" y="125" font-family="Inter" font-size="11" fill="#DC2626" font-weight="700">Klaim RS (flat dari H3 → H7)</text>
+        <text x="380" y="138" font-family="Inter" font-size="9" fill="#DC2626">Lab tetap normal, tapi diklaim masih perlu observasi</text>
+        <!-- Red Flag marker -->
+        <circle cx="600" cy="140" r="8" fill="#DC2626" stroke="#fff" stroke-width="3"/>
+        <text x="620" y="135" font-family="JetBrains Mono" font-size="12" fill="#DC2626" font-weight="700">RED FLAG</text>
+        <text x="620" y="148" font-family="Inter" font-size="9" fill="#DC2626">Selisih vertikal = 90 poin</text>
+        <!-- Lab markers -->
+        <circle cx="280" cy="140" r="4" fill="#16A34A"/>
+        <text x="270" y="125" font-family="JetBrains Mono" font-size="9" fill="#16A34A" text-anchor="end">Leukosit 8000</text>
+        <circle cx="440" cy="180" r="4" fill="#16A34A"/>
+        <text x="430" y="200" font-family="JetBrains Mono" font-size="9" fill="#16A34A" text-anchor="end">Trombosit 250rb</text>
+        <circle cx="600" cy="195" r="4" fill="#16A34A"/>
+        <text x="615" y="190" font-family="JetBrains Mono" font-size="9" fill="#16A34A">Masih normal</text>
+      </svg>
+    </div>
+    <div style="margin-top:14px; display:grid; grid-template-columns: 2fr 1fr; gap:18px;">
+      <div style="font-size:11px; color:var(--text-body); line-height:1.55;">
+        <b style="color:var(--primary);">Interpretasi:</b> Lab pasien normal sejak H3 (leukosit 8000, trombosit 250rb), kurva biologis datar → seharusnya pulang H5. Klaim RS dipanjangkan sampai H7 = <b style="color:var(--accent);">selisih 4 hari berpotensi fiktif</b>. Skor 0.82 = High Anomaly.
+      </div>
+      <div style="padding:10px 12px; background:var(--accent-soft); border-left:3px solid var(--accent); border-radius:0 4px 4px 0; font-size:10px; color:var(--text-body); line-height:1.5;">
+        <b>Human-in-the-Loop:</b> Reviewer manusia memutuskan. VERA hanya memberi bukti.
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <div>VERA — Mockup Kurva Anomali</div>
+    <div class="pagenum">14 / 20</div>
+  </div>
+</section>
+
+<!-- ====================================================================
+     SLIDE 15 — B6 ROADMAP 3 FASE
+     ==================================================================== -->
+<section class="page">
+  <div class="slide-header">
+    <div class="brand">VERA<span class="dot">·</span>Bagian 06</div>
+    <div>Roadmap 3 Fase</div>
+  </div>
+  <div class="slide-body">
+    <div class="eyebrow"><span class="section-num">B06</span> · PETA JALAN PENGEMBANGAN</div>
+    <div class="h-section">Dari PoC 1.000 Sintetis<br>ke Skala Nasional BPJS.</div>
+    <div style="margin-top:24px; background:var(--bg-card); border:1px solid var(--border); border-radius:6px; padding:32px 28px 24px;">
+      <!-- Timeline -->
+      <svg width="100%" height="280" viewBox="0 0 1080 280" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="tlGrad" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#0EA5E9"/>
+            <stop offset="0.5" stop-color="#0F2A5C"/>
+            <stop offset="1" stop-color="#DC2626"/>
+          </linearGradient>
+        </defs>
+        <!-- Main timeline line -->
+        <line x1="80" y1="80" x2="1000" y2="80" stroke="url(#tlGrad)" stroke-width="6" stroke-linecap="round"/>
+        <!-- Tick marks for months -->
+        <line x1="80" y1="70" x2="80" y2="90" stroke="#0F2A5C" stroke-width="2"/>
+        <line x1="320" y1="70" x2="320" y2="90" stroke="#0F2A5C" stroke-width="2"/>
+        <line x1="560" y1="70" x2="560" y2="90" stroke="#0F2A5C" stroke-width="2"/>
+        <line x1="800" y1="70" x2="800" y2="90" stroke="#0F2A5C" stroke-width="2"/>
+        <line x1="1000" y1="70" x2="1000" y2="90" stroke="#0F2A5C" stroke-width="2"/>
+        <!-- Month labels -->
+        <text x="80" y="55" font-family="JetBrains Mono" font-size="10" fill="#64748B" text-anchor="middle" font-weight="700">BULAN 1</text>
+        <text x="320" y="55" font-family="JetBrains Mono" font-size="10" fill="#64748B" text-anchor="middle" font-weight="700">BULAN 3</text>
+        <text x="560" y="55" font-family="JetBrains Mono" font-size="10" fill="#64748B" text-anchor="middle" font-weight="700">BULAN 6</text>
+        <text x="800" y="55" font-family="JetBrains Mono" font-size="10" fill="#64748B" text-anchor="middle" font-weight="700">BULAN 9</text>
+        <text x="1000" y="55" font-family="JetBrains Mono" font-size="10" fill="#64748B" text-anchor="middle" font-weight="700">BULAN 12</text>
+        <!-- Phase 1 marker -->
+        <circle cx="200" cy="80" r="12" fill="#0EA5E9" stroke="#fff" stroke-width="3"/>
+        <text x="200" y="84" font-family="JetBrains Mono" font-size="10" fill="#fff" text-anchor="middle" font-weight="700">1</text>
+        <!-- Phase 2 marker -->
+        <circle cx="500" cy="80" r="12" fill="#0F2A5C" stroke="#fff" stroke-width="3"/>
+        <text x="500" y="84" font-family="JetBrains Mono" font-size="10" fill="#fff" text-anchor="middle" font-weight="700">2</text>
+        <!-- Phase 3 marker -->
+        <circle cx="820" cy="80" r="12" fill="#DC2626" stroke="#fff" stroke-width="3"/>
+        <text x="820" y="84" font-family="JetBrains Mono" font-size="10" fill="#fff" text-anchor="middle" font-weight="700">3</text>
+
+        <!-- Phase 1 box -->
+        <rect x="60" y="120" width="280" height="140" rx="6" fill="#EFF6FF" stroke="#0EA5E9" stroke-width="1.5"/>
+        <text x="200" y="142" font-family="Inter" font-size="10" fill="#0EA5E9" text-anchor="middle" font-weight="700" letter-spacing="2">FASE 01 · BULAN 1-3</text>
+        <text x="200" y="162" font-family="Playfair Display" font-size="15" fill="#0F2A5C" text-anchor="middle" font-weight="700">Proof of Concept</text>
+        <text x="200" y="185" font-family="Inter" font-size="10" fill="#475569" text-anchor="middle">Deploy MVP ke Vercel</text>
+        <text x="200" y="201" font-family="Inter" font-size="10" fill="#475569" text-anchor="middle">Uji ekstraksi LLM 1.000</text>
+        <text x="200" y="217" font-family="Inter" font-size="10" fill="#475569" text-anchor="middle">data sintetis Pneumonia</text>
+        <text x="200" y="245" font-family="JetBrains Mono" font-size="9" fill="#0F2A5C" text-anchor="middle" font-weight="700">→ Optimasi prompt anti-hallucination</text>
+
+        <!-- Phase 2 box -->
+        <rect x="360" y="120" width="280" height="140" rx="6" fill="#F0FDF4" stroke="#16A34A" stroke-width="1.5"/>
+        <text x="500" y="142" font-family="Inter" font-size="10" fill="#16A34A" text-anchor="middle" font-weight="700" letter-spacing="2">FASE 02 · BULAN 4-6</text>
+        <text x="500" y="162" font-family="Playfair Display" font-size="15" fill="#0F2A5C" text-anchor="middle" font-weight="700">Pilot Shadow-Testing</text>
+        <text x="500" y="185" font-family="Inter" font-size="10" fill="#475569" text-anchor="middle">Integrasi API VERA dengan</text>
+        <text x="500" y="201" font-family="Inter" font-size="10" fill="#475569" text-anchor="middle">1 cabang BPJS · VERA berjalan</text>
+        <text x="500" y="217" font-family="Inter" font-size="10" fill="#475569" text-anchor="middle">passively (analisis klaim sudah dibayar)</text>
+        <text x="500" y="245" font-family="JetBrains Mono" font-size="9" fill="#0F2A5C" text-anchor="middle" font-weight="700">→ Ukur akurasi False Positive</text>
+
+        <!-- Phase 3 box -->
+        <rect x="680" y="120" width="320" height="140" rx="6" fill="#FEF2F2" stroke="#DC2626" stroke-width="1.5"/>
+        <text x="840" y="142" font-family="Inter" font-size="10" fill="#DC2626" text-anchor="middle" font-weight="700" letter-spacing="2">FASE 03 · BULAN 7-12</text>
+        <text x="840" y="162" font-family="Playfair Display" font-size="15" fill="#0F2A5C" text-anchor="middle" font-weight="700">Skalabilitas Nasional</text>
+        <text x="840" y="185" font-family="Inter" font-size="10" fill="#475569" text-anchor="middle">Aktifkan Vercel Edge Functions</text>
+        <text x="840" y="201" font-family="Inter" font-size="10" fill="#475569" text-anchor="middle">untuk pemrosesan real-time</text>
+        <text x="840" y="217" font-family="Inter" font-size="10" fill="#475569" text-anchor="middle">Neon auto-scaling nasional</text>
+        <text x="840" y="245" font-family="JetBrains Mono" font-size="9" fill="#0F2A5C" text-anchor="middle" font-weight="700">→ Penyerahan IP &amp; Repo GitHub ke BPJS</text>
+      </svg>
+    </div>
+    <div style="margin-top:14px; font-size:11px; color:var(--text-muted); line-height:1.55; text-align:center;">
+      <b style="color:var(--primary);">Realistis sesuai kapasitas tim 3 orang.</b> Setiap fase punya deliverable terukur — bukan janji kosong. Skala bertumbuh dari sintetis → pilot → nasional.
+    </div>
+  </div>
+  <div class="slide-footer">
+    <div>VERA — Roadmap 3 Fase</div>
+    <div class="pagenum">15 / 20</div>
+  </div>
+</section>
+<!-- ====================================================================
+     SLIDE 16 — B6b DELIVERABLE PER FASE
+     ==================================================================== -->
+<section class="page">
+  <div class="slide-header">
+    <div class="brand">VERA<span class="dot">·</span>Bagian 06</div>
+    <div>Deliverable per Fase</div>
+  </div>
+  <div class="slide-body">
+    <div class="eyebrow"><span class="section-num">B06</span> · MILESTONE TERUKUR</div>
+    <div class="h-section">Setiap Fase Punya Deliverable,<br>Bukan Deskripsi Umum.</div>
+    <div style="margin-top:24px; background:var(--bg-card); border:1px solid var(--border); border-radius:6px; overflow:hidden;">
+      <div style="display:grid; grid-template-columns: 80px 110px 1fr 1fr 1fr; background:var(--primary); color:#fff; font-size:11px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase;">
+        <div style="padding:12px 14px; border-right:1px solid rgba(255,255,255,0.15);">FASE</div>
+        <div style="padding:12px 14px; border-right:1px solid rgba(255,255,255,0.15);">DURASI</div>
+        <div style="padding:12px 14px; border-right:1px solid rgba(255,255,255,0.15);">DELIVERABLE UTAMA</div>
+        <div style="padding:12px 14px; border-right:1px solid rgba(255,255,255,0.15);">SUMBER DAYA</div>
+        <div style="padding:12px 14px;">METRIK SUKSES</div>
+      </div>
+      <!-- Row 1: Fase 1 -->
+      <div style="display:grid; grid-template-columns: 80px 110px 1fr 1fr 1fr; border-bottom:1px solid var(--border); background:#EFF6FF;">
+        <div style="padding:14px; border-right:1px solid var(--border); display:flex; align-items:center; justify-content:center;">
+          <div style="width:40px; height:40px; border-radius:50%; background:var(--secondary); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-weight:700; font-size:14px;">01</div>
+        </div>
+        <div style="padding:14px; border-right:1px solid var(--border); font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--primary); font-weight:600; align-self:center;">Bulan 1-3</div>
+        <div style="padding:14px; border-right:1px solid var(--border); font-size:11px; color:var(--text-body); line-height:1.55; align-self:center;">
+          Vercel MVP live + 1.000 data sintetis Pneumonia diuji + kurva standar pneumonia ditetapkan Clinical Expert
+        </div>
+        <div style="padding:14px; border-right:1px solid var(--border); font-size:11px; color:var(--text-body); line-height:1.55; align-self:center;">
+          Tim 3 orang · Akun Vercel + Neon · OpenRouter credit $50 · Data sintetis MIMIC-IV turunan
+        </div>
+        <div style="padding:14px; font-size:11px; color:var(--text-body); line-height:1.55; align-self:center;">
+          <b style="color:var(--accent);">Hallucination rate &lt; 5%</b><br>Parsing JSON valid &gt; 95%
+        </div>
+      </div>
+      <!-- Row 2: Fase 2 -->
+      <div style="display:grid; grid-template-columns: 80px 110px 1fr 1fr 1fr; border-bottom:1px solid var(--border); background:#F0FDF4;">
+        <div style="padding:14px; border-right:1px solid var(--border); display:flex; align-items:center; justify-content:center;">
+          <div style="width:40px; height:40px; border-radius:50%; background:var(--success); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-weight:700; font-size:14px;">02</div>
+        </div>
+        <div style="padding:14px; border-right:1px solid var(--border); font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--primary); font-weight:600; align-self:center;">Bulan 4-6</div>
+        <div style="padding:14px; border-right:1px solid var(--border); font-size:11px; color:var(--text-body); line-height:1.55; align-self:center;">
+          API BPJS pilot integration · VERA shadow run di 1 cabang · laporan akurasi + audit trail
+        </div>
+        <div style="padding:14px; border-right:1px solid var(--border); font-size:11px; color:var(--text-body); line-height:1.55; align-self:center;">
+          Mitra cabang BPJS · Endpoint API klaim · 1 Clinical Reviewer BPJS uji coba
+        </div>
+        <div style="padding:14px; font-size:11px; color:var(--text-body); line-height:1.55; align-self:center;">
+          <b style="color:var(--accent);">False Positive &lt; 10%</b><br>Recall Red Flag &gt; 80%
+        </div>
+      </div>
+      <!-- Row 3: Fase 3 -->
+      <div style="display:grid; grid-template-columns: 80px 110px 1fr 1fr 1fr; background:#FEF2F2;">
+        <div style="padding:14px; border-right:1px solid var(--border); display:flex; align-items:center; justify-content:center;">
+          <div style="width:40px; height:40px; border-radius:50%; background:var(--accent); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-weight:700; font-size:14px;">03</div>
+        </div>
+        <div style="padding:14px; border-right:1px solid var(--border); font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--primary); font-weight:600; align-self:center;">Bulan 7-12</div>
+        <div style="padding:14px; border-right:1px solid var(--border); font-size:11px; color:var(--text-body); line-height:1.55; align-self:center;">
+          Vercel Edge Functions + Neon Auto-scale · penyerahan IP &amp; Repo GitHub ke BPJS · training reviewer BPJS
+        </div>
+        <div style="padding:14px; border-right:1px solid var(--border); font-size:11px; color:var(--text-body); line-height:1.55; align-self:center;">
+          Tim 5+ orang · Kontrak resmi BPJS · Vercel Enterprise · Neon scale-out
+        </div>
+        <div style="padding:14px; font-size:11px; color:var(--text-body); line-height:1.55; align-self:center;">
+          <b style="color:var(--accent);">Latensi &lt; 2 detik/klaim</b><br>Cakupan nasional 100%
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:18px; padding:14px 18px; background:var(--bg-soft); border-left:3px solid var(--primary); border-radius:0 4px 4px 0; font-size:11px; color:var(--text-body); line-height:1.55;">
+      <b style="color:var(--primary);">Visi jangka panjang (12+ bulan):</b> Setelah penyerahan ke BPJS, VERA menjadi modul standar audit klaim rawat inap di semua cabang — dipelihara internal BPJS dengan bantuan tim VERA untuk update model &amp; kurva standar penyakit baru.
+    </div>
+  </div>
+  <div class="slide-footer">
+    <div>VERA — Deliverable per Fase</div>
+    <div class="pagenum">16 / 20</div>
+  </div>
+</section>
+
+<!-- ====================================================================
+     SLIDE 17 — B7 DAMPAK & ESTIMASI PENGHEMATAN
+     ==================================================================== -->
+<section class="page">
+  <div class="slide-header">
+    <div class="brand">VERA<span class="dot">·</span>Bagian 07</div>
+    <div>Dampak &amp; Estimasi Penghematan</div>
+  </div>
+  <div class="slide-body">
+    <div class="eyebrow"><span class="section-num">B07</span> · PERUBAHAN NYATA &amp; TERUKUR</div>
+    <div class="h-section">Waktu Audit Turun 80%.<br>Penghematan Terasa di Skala Nasional.</div>
+    <div style="margin-top:18px; display:grid; grid-template-columns: 1fr 1fr; gap:18px;">
+      <!-- LEFT: Before vs After -->
+      <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:6px; padding:20px;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700; color:var(--secondary); letter-spacing:2px; margin-bottom:14px;">⌥ PERUBAHAN NYATA (BEFORE → AFTER)</div>
+        <div style="display:flex; flex-direction:column; gap:12px;">
+          <div style="display:grid; grid-template-columns: 1fr 30px 1fr; gap:8px; align-items:center;">
+            <div style="padding:10px 12px; background:#F8FAFC; border-radius:4px; border-left:3px solid var(--text-muted);">
+              <div style="font-size:9px; color:var(--text-muted); letter-spacing:1.5px; font-weight:700;">BEFORE</div>
+              <div style="font-size:12px; color:var(--text-body); margin-top:3px;">Reviewer baca catatan medis panjang per pasien</div>
+              <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--primary); font-weight:700; margin-top:3px;">~45 menit / kasus</div>
+            </div>
+            <div style="text-align:center; color:var(--accent); font-size:14px; font-weight:700;">→</div>
+            <div style="padding:10px 12px; background:var(--accent-soft); border-radius:4px; border-left:3px solid var(--accent);">
+              <div style="font-size:9px; color:var(--accent); letter-spacing:1.5px; font-weight:700;">AFTER</div>
+              <div style="font-size:12px; color:var(--text-body); margin-top:3px;">Lihat skor + grafik anomali saja</div>
+              <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--accent); font-weight:700; margin-top:3px;">~9 menit / kasus</div>
+            </div>
+          </div>
+          <div style="display:grid; grid-template-columns: 1fr 30px 1fr; gap:8px; align-items:center;">
+            <div style="padding:10px 12px; background:#F8FAFC; border-radius:4px; border-left:3px solid var(--text-muted);">
+              <div style="font-size:9px; color:var(--text-muted); letter-spacing:1.5px; font-weight:700;">BEFORE</div>
+              <div style="font-size:12px; color:var(--text-body); margin-top:3px;">Basis validasi: narasi dokter</div>
+              <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--primary); font-weight:700; margin-top:3px;">Subjektif · sulit dibantah</div>
+            </div>
+            <div style="text-align:center; color:var(--accent); font-size:14px; font-weight:700;">→</div>
+            <div style="padding:10px 12px; background:var(--accent-soft); border-radius:4px; border-left:3px solid var(--accent);">
+              <div style="font-size:9px; color:var(--accent); letter-spacing:1.5px; font-weight:700;">AFTER</div>
+              <div style="font-size:12px; color:var(--text-body); margin-top:3px;">Basis validasi: kurva biologis</div>
+              <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--accent); font-weight:700; margin-top:3px;">Objektif · dapat diukur</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- RIGHT: Big number with disclaimer -->
+      <div style="background:var(--primary); color:#fff; border-radius:6px; padding:24px 22px; display:flex; flex-direction:column; justify-content:space-between;">
+        <div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700; color:var(--secondary); letter-spacing:2px; margin-bottom:6px;">⌥ ESTIMASI PENGHEMATAN</div>
+          <div style="font-family:'Playfair Display',serif; font-size:14px; color:rgba(255,255,255,0.7); margin-bottom:4px;">Potongan 0,5 hari rawat fiktif</div>
+          <div style="font-family:'Playfair Display',serif; font-size:14px; color:rgba(255,255,255,0.7); margin-bottom:14px;">kasus Stroke &amp; Pneumonia</div>
+          <div style="font-family:'Playfair Display',serif; font-size:84px; font-weight:900; line-height:0.95; letter-spacing:-3px; color:#fff;">Rp300<span style="font-size:32px; color:var(--secondary);">M</span></div>
+          <div style="font-size:13px; color:rgba(255,255,255,0.85); margin-top:4px; font-weight:600;">per tahun (estimasi konservatif)</div>
+        </div>
+        <div style="margin-top:18px; padding:10px 12px; background:rgba(220,38,38,0.2); border-left:3px solid var(--accent); border-radius:0 4px 4px 0; font-size:10px; color:rgba(255,255,255,0.92); line-height:1.5;">
+          <b style="color:#FECACA;">ESTIMASI — bukan klaim absolut.</b> Berdasarkan asumsi: 200.000 kasus/tahun × Rp 1.500.000 per 0,5 hari. Perlu validasi pilot di Fase 2 untuk konfirmasi angka aktual.
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:14px; padding:12px 16px; background:var(--bg-soft); border-radius:4px; font-size:11px; color:var(--text-muted); line-height:1.55;">
+      <b style="color:var(--primary);">Transparansi:</b> Juri menilai kejujuran. Klaim Rp 300 M/tahun adalah <i>estimasi atas</i> berdasarkan asumsi konservatif. Akurasi sebenarnya akan terukur setelah Fase 2 (Pilot Shadow-Testing di 1 cabang BPJS).
+    </div>
+  </div>
+  <div class="slide-footer">
+    <div>VERA — Dampak &amp; Estimasi Penghematan</div>
+    <div class="pagenum">17 / 20</div>
+  </div>
+</section>
+
+<!-- ====================================================================
+     SLIDE 18 — B7b PENERIMA MANFAAT
+     ==================================================================== -->
+<section class="page">
+  <div class="slide-header">
+    <div class="brand">VERA<span class="dot">·</span>Bagian 07</div>
+    <div>Penerima Manfaat</div>
+  </div>
+  <div class="slide-body">
+    <div class="eyebrow"><span class="section-num">B07</span> · NILAI BAGI STAKEHOLDER</div>
+    <div class="h-section">Tiga Pihak yang Diuntungkan,<br>Satu Sistem yang Melayani.</div>
+    <div style="margin-top:24px; display:grid; grid-template-columns: 1fr 1fr 1fr; gap:18px; height:calc(100% - 140px);">
+      <!-- BPJS -->
+      <div style="background:var(--bg-card); border:1px solid var(--border); border-top:4px solid var(--primary); border-radius:6px; padding:22px 20px; display:flex; flex-direction:column;">
+        <div style="width:56px; height:56px; border-radius:50%; background:var(--primary); color:#fff; display:flex; align-items:center; justify-content:center; margin-bottom:14px;">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        </div>
+        <div style="font-family:'Playfair Display',serif; font-size:22px; font-weight:700; color:var(--primary); margin-bottom:6px;">BPJS Kesehatan</div>
+        <div style="font-size:11px; color:var(--text-muted); letter-spacing:1.5px; text-transform:uppercase; font-weight:600; margin-bottom:12px;">PENJAGA INTEGRITAS JKN</div>
+        <div style="font-size:12px; color:var(--text-body); line-height:1.6; flex:1;">
+          Selamat dari defisit akibat fraud fiktif. Klaim rawat inap divalidasi biologis, integritas JKN terjaga. Setiap rupiah dibayar atas dasar bukti ilmiah, bukan narasi.
+        </div>
+        <div style="margin-top:14px; padding:8px 10px; background:var(--bg-soft); border-radius:3px; font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--primary); font-weight:700;">
+          → Penghematan ±Rp 300 M/tahun (estimasi)
+        </div>
+      </div>
+      <!-- RS Jujur -->
+      <div style="background:var(--bg-card); border:1px solid var(--border); border-top:4px solid var(--secondary); border-radius:6px; padding:22px 20px; display:flex; flex-direction:column;">
+        <div style="width:56px; height:56px; border-radius:50%; background:var(--secondary); color:#fff; display:flex; align-items:center; justify-content:center; margin-bottom:14px;">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <div style="font-family:'Playfair Display',serif; font-size:22px; font-weight:700; color:var(--primary); margin-bottom:6px;">RS Jujur</div>
+        <div style="font-size:11px; color:var(--text-muted); letter-spacing:1.5px; text-transform:uppercase; font-weight:600; margin-bottom:12px;">PERSAINGAN ADIL</div>
+        <div style="font-size:12px; color:var(--text-body); line-height:1.6; flex:1;">
+          Tidak dilindungi RS yang curang. Persaingan faskes jadi adil — yang jujur tidak kalah saham dengan yang manipulatif. Insentif untuk kualitas pelayanan, bukan strategi fraud.
+        </div>
+        <div style="margin-top:14px; padding:8px 10px; background:var(--secondary-soft); border-radius:3px; font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--primary); font-weight:700;">
+          → Audit trail objektif sebagai pembela
+        </div>
+      </div>
+      <!-- Peserta JKN -->
+      <div style="background:var(--primary); color:#fff; border:1px solid var(--primary); border-top:4px solid var(--secondary); border-radius:6px; padding:22px 20px; display:flex; flex-direction:column;">
+        <div style="width:56px; height:56px; border-radius:50%; background:var(--secondary); color:#fff; display:flex; align-items:center; justify-content:center; margin-bottom:14px;">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0 1 16 0v1"/></svg>
+        </div>
+        <div style="font-family:'Playfair Display',serif; font-size:22px; font-weight:700; color:#fff; margin-bottom:6px;">Peserta JKN</div>
+        <div style="font-size:11px; color:rgba(255,255,255,0.65); letter-spacing:1.5px; text-transform:uppercase; font-weight:600; margin-bottom:12px;">TIDAK OVER-TREATMENT</div>
+        <div style="font-size:12px; color:rgba(255,255,255,0.92); line-height:1.6; flex:1;">
+          Tidak dipertahankan rawat inap lebih lama dari indikasi medis. Hak pasien pulang tepat waktu dihormati. Risiko infeksi nosokomial &amp; stres finansial berkurang. Kesehatan diutamakan.
+        </div>
+        <div style="margin-top:14px; padding:8px 10px; background:rgba(14,165,233,0.22); border-radius:3px; font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--secondary); font-weight:700;">
+          → Pulang tepat waktu, hak dihormati
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:14px; padding:12px 16px; background:var(--bg-soft); border-left:3px solid var(--primary); border-radius:0 4px 4px 0; font-size:11px; color:var(--text-body); line-height:1.55;">
+      <b style="color:var(--primary);">Sistemik:</b> Manfaat VERA menyebar ke seluruh ekosistem JKN — bukan hanya BPJS yang hemat. Setiap pihak yang jujur menang, hanya fraud yang kalah.
+    </div>
+  </div>
+  <div class="slide-footer">
+    <div>VERA — Penerima Manfaat</div>
+    <div class="pagenum">18 / 20</div>
+  </div>
+</section>
+
+<!-- ====================================================================
+     SLIDE 19 — B8 RISIKO, PRIVASI & ETIKA
+     ==================================================================== -->
+<section class="page">
+  <div class="slide-header">
+    <div class="brand">VERA<span class="dot">·</span>Bagian 08</div>
+    <div>Risiko, Privasi &amp; Etika</div>
+  </div>
+  <div class="slide-body">
+    <div class="eyebrow"><span class="section-num">B08</span> · MITIGASI RISIKO KRITIS</div>
+    <div class="h-section">Tiga Risiko Utama,<br>Tiga Mitigasi Teknis &amp; Etis.</div>
+    <div style="margin-top:18px; background:var(--bg-card); border:1px solid var(--border); border-radius:6px; overflow:hidden;">
+      <!-- Header -->
+      <div style="display:grid; grid-template-columns: 60px 1fr 1fr; background:var(--primary); color:#fff; font-size:11px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase;">
+        <div style="padding:10px 14px; border-right:1px solid rgba(255,255,255,0.15);">#</div>
+        <div style="padding:10px 14px; border-right:1px solid rgba(255,255,255,0.15);">RISIKO</div>
+        <div style="padding:10px 14px;">MITIGASI</div>
+      </div>
+      <!-- Row 1: UU PDP -->
+      <div style="display:grid; grid-template-columns: 60px 1fr 1fr; border-bottom:1px solid var(--border); background:#FEF2F2;">
+        <div style="padding:14px; border-right:1px solid var(--border); display:flex; align-items:center; justify-content:center;">
+          <div style="width:32px; height:32px; border-radius:50%; background:var(--accent); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-weight:700; font-size:12px;">01</div>
+        </div>
+        <div style="padding:14px; border-right:1px solid var(--border);">
+          <div style="font-family:'Playfair Display',serif; font-size:15px; font-weight:700; color:var(--primary); margin-bottom:4px;">Kepatuhan UU PDP</div>
+          <div style="font-size:11px; color:var(--text-body); line-height:1.55;">Mengirim data PHI ke LLM pihak ketiga (OpenRouter/Xyrus) berpotensi melanggar UU PDP No. 27 Tahun 2022.</div>
+        </div>
+        <div style="padding:14px;">
+          <div style="font-family:'Playfair Display',serif; font-size:13px; font-weight:700; color:var(--accent); margin-bottom:4px;">→ Data Stripping di Vercel Edge</div>
+          <div style="font-size:11px; color:var(--text-body); line-height:1.55;">Nama pasien, NIK, alamat dihapus/diganti mask <b>sebelum</b> data dikirim ke LLM. LLM hanya memproses teks medis murni (mis. "H3: TD 120/80, leukosit 8000"). Audit log hanya di Neon.</div>
+        </div>
+      </div>
+      <!-- Row 2: Hallucination -->
+      <div style="display:grid; grid-template-columns: 60px 1fr 1fr; border-bottom:1px solid var(--border); background:#EFF6FF;">
+        <div style="padding:14px; border-right:1px solid var(--border); display:flex; align-items:center; justify-content:center;">
+          <div style="width:32px; height:32px; border-radius:50%; background:var(--secondary); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-weight:700; font-size:12px;">02</div>
+        </div>
+        <div style="padding:14px; border-right:1px solid var(--border);">
+          <div style="font-family:'Playfair Display',serif; font-size:15px; font-weight:700; color:var(--primary); margin-bottom:4px;">AI Hallucination</div>
+          <div style="font-size:11px; color:var(--text-body); line-height:1.55;">LLM berpotensi mengarang angka lab yang tidak ada di teks EMR asli → klaim fiktif divalidasi sebagai fiktif pula (false positive) atau sebaliknya.</div>
+        </div>
+        <div style="padding:14px;">
+          <div style="font-family:'Playfair Display',serif; font-size:13px; font-weight:700; color:var(--secondary); margin-bottom:4px;">→ JSON Schema Validation Ketat</div>
+          <div style="font-size:11px; color:var(--text-body); line-height:1.55;">Output LLM divalidasi skema JSON ketat di backend Vercel. Jika format tidak sesuai → retry. Jika masih gagal → field diisi <b>null</b> (TIDAK diinterpolasi). Tidak ada ruang mengarang.</div>
+        </div>
+      </div>
+      <!-- Row 3: False Positive -->
+      <div style="display:grid; grid-template-columns: 60px 1fr 1fr; background:#F0FDF4;">
+        <div style="padding:14px; border-right:1px solid var(--border); display:flex; align-items:center; justify-content:center;">
+          <div style="width:32px; height:32px; border-radius:50%; background:var(--success); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-weight:700; font-size:12px;">03</div>
+        </div>
+        <div style="padding:14px; border-right:1px solid var(--border);">
+          <div style="font-family:'Playfair Display',serif; font-size:15px; font-weight:700; color:var(--primary); margin-bottom:4px;">False Positive (Tuduhan RS Jujur)</div>
+          <div style="font-size:11px; color:var(--text-body); line-height:1.55;">VERA salah flag RS yang jujur → tuduhan tidak berdasar, merusak hubungan BPJS-RS, sengketa hukum.</div>
+        </div>
+        <div style="padding:14px;">
+          <div style="font-family:'Playfair Display',serif; font-size:13px; font-weight:700; color:var(--success); margin-bottom:4px;">→ Human-in-the-Loop (Wajib)</div>
+          <div style="font-size:11px; color:var(--text-body); line-height:1.55;">VERA hanya memberi Red Flag + grafik bukti. Keputusan akhir tetap pada Reviewer Manusia. Skor 0.82 = prioritas review, bukan vonis. Reviewer bisa override dengan alasan medis.</div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:14px; padding:12px 16px; background:var(--bg-soft); border-left:3px solid var(--accent); border-radius:0 4px 4px 0; font-size:11px; color:var(--text-body); line-height:1.55;">
+      <b style="color:var(--accent);">Kepatuhan absolut:</b> Tidak menggunakan data peserta JKN riil tanpa izin resmi dari pihak berwenang. Fase 1 (PoC) hanya memakai data sintetis MIMIC-IV turunan.
+    </div>
+  </div>
+  <div class="slide-footer">
+    <div>VERA — Risiko, Privasi &amp; Etika</div>
+    <div class="pagenum">19 / 20</div>
+  </div>
+</section>
+
+<!-- ====================================================================
+     SLIDE 20 — B9 PROFIL TIM & PENUTUP
+     ==================================================================== -->
+<section class="page" style="background:linear-gradient(135deg, #0F2A5C 0%, #1E3A8A 100%); color:#fff;">
+  <div style="position:absolute; inset:0; background-image: linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px); background-size:64px 64px; z-index:0;"></div>
+  <div style="position:absolute; left:0; right:0; top:0; height:3px; background:linear-gradient(90deg, #DC2626 30%, #0EA5E9 30%); z-index:3;"></div>
+  <div class="slide-header" style="color:rgba(255,255,255,0.7);">
+    <div class="brand" style="color:#fff;">VERA<span class="dot">·</span>Bagian 09 + Penutup</div>
+    <div>Profil Tim</div>
+  </div>
+  <div class="slide-body" style="position:relative; z-index:2;">
+    <div class="eyebrow" style="color:var(--secondary);"><span class="section-num">B09</span> · KOMPOSISI TIM 3 ORANG</div>
+    <div style="font-family:'Playfair Display',serif; font-size:34px; font-weight:700; line-height:1.15; color:#fff;">Tim yang saling melengkapi —<br>teknis, domain, eksekusi.</div>
+    <div style="margin-top:24px; display:grid; grid-template-columns: 1fr 1fr 1fr; gap:18px;">
+      <!-- Anggota 1 -->
+      <div style="background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.15); border-top:3px solid var(--secondary); border-radius:6px; padding:18px 18px;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700; color:var(--secondary); letter-spacing:2px; margin-bottom:6px;">ANGGOTA 01</div>
+        <div style="font-family:'Playfair Display',serif; font-size:20px; font-weight:700; color:#fff; margin-bottom:8px;">AI &amp; Data Architect</div>
+        <div style="font-size:11px; color:rgba(255,255,255,0.75); line-height:1.55; margin-bottom:10px;">
+          Merancang Prompt Engineering untuk Clinical NLP via OpenRouter/Xyrus. Desain logika Time-Series Anomaly Detection. Optimasi model untuk biaya token rendah.
+        </div>
+        <div style="font-size:10px; color:rgba(255,255,255,0.65); line-height:1.5; padding-top:8px; border-top:1px dashed rgba(255,255,255,0.15);">
+          <b style="color:var(--secondary);">Keahlian:</b> LLM orchestration, JSON schema, prompt design, Python, PostgreSQL
+        </div>
+      </div>
+      <!-- Anggota 2 -->
+      <div style="background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.15); border-top:3px solid var(--accent); border-radius:6px; padding:18px 18px;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700; color:var(--accent); letter-spacing:2px; margin-bottom:6px;">ANGGOTA 02</div>
+        <div style="font-family:'Playfair Display',serif; font-size:20px; font-weight:700; color:#fff; margin-bottom:8px;">Full-Stack Cloud Engineer</div>
+        <div style="font-size:11px; color:rgba(255,255,255,0.75); line-height:1.55; margin-bottom:10px;">
+          Membangun API &amp; Dashboard Next.js di Vercel. Merancang schema Neon Postgres + branching. Setup CI/CD GitHub Actions untuk auto-deploy &amp; migrasi.
+        </div>
+        <div style="font-size:10px; color:rgba(255,255,255,0.65); line-height:1.5; padding-top:8px; border-top:1px dashed rgba(255,255,255,0.15);">
+          <b style="color:var(--accent);">Keahlian:</b> Next.js, TypeScript, Vercel Edge, Neon, GitHub Actions, UI/UX
+        </div>
+      </div>
+      <!-- Anggota 3 -->
+      <div style="background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.15); border-top:3px solid #16A34A; border-radius:6px; padding:18px 18px;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700; color:#86EFAC; letter-spacing:2px; margin-bottom:6px;">ANGGOTA 03</div>
+        <div style="font-family:'Playfair Display',serif; font-size:20px; font-weight:700; color:#fff; margin-bottom:8px;">Clinical Domain Expert</div>
+        <div style="font-size:11px; color:rgba(255,255,255,0.75); line-height:1.55; margin-bottom:10px;">
+          Menentukan "Kurva Pemulihan Standar" penyakit (kapan seseorang harus pulang berdasarkan sains medis). Memvalidasi akurasi Red Flag VERA. Reviewer BPJS liaison.
+        </div>
+        <div style="font-size:10px; color:rgba(255,255,255,0.65); line-height:1.5; padding-top:8px; border-top:1px dashed rgba(255,255,255,0.15);">
+          <b style="color:#86EFAC;">Keahlian:</b> Kedokteran internal, ICD-10, param klinis (lab/vital), workflow audit klaim
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:24px; text-align:center; padding:20px; background:rgba(220,38,38,0.18); border:1px solid rgba(220,38,38,0.4); border-radius:6px;">
+      <div style="font-family:'Playfair Display',serif; font-size:24px; font-weight:700; color:#fff; letter-spacing:-0.5px;">VERA — Bukti Matematis, Bukan Narasi.</div>
+      <div style="font-size:13px; color:rgba(255,255,255,0.75); margin-top:6px; font-style:italic;">Detect Smarter, Protect JKN.</div>
+    </div>
+  </div>
+  <div class="slide-footer" style="color:rgba(255,255,255,0.6);">
+    <div>VERA — Proposal Healthkathon 2026 · Tim VERA</div>
+    <div class="pagenum" style="color:#fff;">20 / 20</div>
+  </div>
+</section>
+</body>
+</html>
