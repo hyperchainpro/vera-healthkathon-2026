@@ -169,3 +169,58 @@ Stage Summary:
 - User can deploy via terminal-local Vercel CLI after rotating tokens (no AI involvement with credentials)
 - Final screenshots in /download/vera_v2_*.png
 - Benchmark report in /download/vera_benchmark_report.json
+
+---
+Task ID: 5
+Agent: Main (Super Z)
+Task: Rebuild VERA as full enterprise web app — auth + sidebar + 6 views
+
+Work Log:
+- User feedback: "Semua Fitur seperti menu, profile gak ada dan semua fitur sebagai aplikasi web app tidak ada, authentikasinya juga tidak ada. Bobrok kali aplikasinya saya sedang kompetisi level nasional"
+- Found inspiration: Vercel Dashboard + Palantir Foundry + Stripe Dashboard + Linear
+- Major rewrite from v2 minimal dashboard to v3 full enterprise web app
+- Created 13 new files:
+  - prisma/schema.prisma — User model (4 roles), AuditLog with userId, Episode with uploadedById
+  - src/lib/auth-store.ts — Zustand auth + navigation stores with localStorage persist
+  - src/app/api/auth/login/route.ts — cookie session (24h)
+  - src/app/api/auth/me/route.ts — current user from cookie
+  - src/app/api/auth/logout/route.ts — clear session
+  - src/app/api/stats/route.ts — dashboard KPIs + trend + distributions
+  - src/app/api/audit/route.ts — all audit logs filterable
+  - src/app/api/users/route.ts — user management list
+  - src/components/layout/Sidebar.tsx — 6-menu nav with user card at bottom
+  - src/components/layout/TopBar.tsx — dynamic title + search + notifications + user menu dropdown
+  - src/components/views/LoginView.tsx — BPJS-style branding with demo credentials
+  - src/components/views/DashboardView.tsx — 4 KPI cards + trend chart + disease donut + top Red Flags + top reviewers
+  - src/components/views/CasesView.tsx — searchable table with flag+disease filters + pagination
+  - src/components/views/CaseDetailView.tsx — 3 charts (Leukosit+Trombosit+Suhu) + verdict + EMR + lab table + audit history + override form
+  - src/components/views/AuditView.tsx — filterable log table with action filter + search
+  - src/components/views/UploadView.tsx — single case form + 3 quick templates + history + pipeline info
+  - src/components/views/SettingsView.tsx — threshold config + curve config + AI pipeline stats + user management
+  - src/components/views/ProfileView.tsx — user header + 6 action stats + my action history table
+- Updated src/app/page.tsx — SPA router with auth gate + 6-view switcher
+- Updated scripts/seed/seed-v3.ts — creates 4 users + 2.000 episodes with audit logs
+- Bug fixes:
+  1. API /claims/[id] used 'reviewer' Prisma relation (renamed to 'user' after schema change)
+  2. API /claims/[id]/audit POST same fix
+  3. CaseDetailView didn't handle 404/invalid data — added toast + closeCase
+- Restarted dev server (port 3000 was stuck from previous session)
+- Lint: 0 errors, 0 warnings
+
+Verification via Agent Browser (all 6 views confirmed rendering):
+- LoginView: BPJS branding + 4 demo credentials shown
+- DashboardView: 4 KPI cards (Red Flag/Time Saved/Rp Saved/Diseases) + trend chart + donut + top Red Flags list + top reviewers
+- CasesView: filterable table (500 Red Flags visible, pagination)
+- CaseDetailView: full clinical analysis with 3 charts + Red Flag verdict box + EMR stripped + lab table + audit history
+- AuditView: filterable log table
+- SettingsView: threshold config cards + user management table (4 users)
+- ProfileView: user header + 6 action stats + my action history
+- UploadView: form + 3 quick templates + pipeline info
+
+Stage Summary:
+- VERA v3 is enterprise-grade web app with proper auth, sidebar nav, 6 distinct views
+- Inspired by Vercel/Stripe/Linear/Palantir Foundry aesthetics
+- 4 demo users (admin/supervisor/reviewer/medical_officer) + cookie session
+- All 2.000 episodes preserved with proper user relations (uploadedById)
+- 2.000+ audit logs seeded (one per episode upload)
+- Login: admin@bpjs.go.id / vera2026 (full admin access)
