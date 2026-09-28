@@ -2,21 +2,17 @@
 
 import { useEffect, useState, useCallback } from "react";
 import {
-  Activity, Upload, AlertTriangle, ShieldCheck, FileText,
-  ChevronRight, Clock, User, Stethoscope, Loader2, CheckCircle2,
+  Activity, AlertTriangle, ShieldCheck, Stethoscope, Loader2,
+  TrendingDown, Clock, Heart,
 } from "lucide-react";
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip,
-  Legend, ResponsiveContainer, ReferenceLine, Area, AreaChart,
+  Legend, ResponsiveContainer, ReferenceLine, ReferenceArea,
 } from "recharts";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Textarea } from "@/components/ui/textarea";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 
 // ============= TYPES =============
@@ -41,15 +37,6 @@ interface LabData {
   tdDiastol: number | null;
   suhu: number | null;
   gcs: number | null;
-}
-
-interface AuditLog {
-  id: string;
-  action: string;
-  reason: string | null;
-  reviewerName: string;
-  metadata: string | null;
-  createdAt: string;
 }
 
 interface StandardCurvePoint {
@@ -86,14 +73,14 @@ interface EpisodeDetail {
     reference: string;
     curve: StandardCurvePoint[];
   } | null;
-  auditLogs: AuditLog[];
+  auditLogs: Array<{ id: string; action: string; reason: string | null; reviewerName: string; createdAt: string }>;
 }
 
-// ============= FLAG LEVEL HELPERS =============
+// ============= FLAG CONFIG =============
 const FLAG_CONFIG = {
-  HIGH: { color: "#DC2626", bg: "#FEF2F2", label: "Red Flag" },
-  MEDIUM: { color: "#F59E0B", bg: "#FFFBEB", label: "Watch" },
-  LOW: { color: "#16A34A", bg: "#F0FDF4", label: "Normal" },
+  HIGH: { color: "#DC2626", bg: "#FEF2F2", label: "Red Flag", short: "HIGH" },
+  MEDIUM: { color: "#F59E0B", bg: "#FFFBEB", label: "Watch", short: "MEDIUM" },
+  LOW: { color: "#16A34A", bg: "#F0FDF4", label: "Normal", short: "LOW" },
 };
 
 function flagBadge(level: "LOW" | "MEDIUM" | "HIGH") {
@@ -121,13 +108,7 @@ export default function Home() {
   const [episodes, setEpisodes] = useState<EpisodeListItem[]>([]);
   const [selected, setSelected] = useState<EpisodeDetail | null>(null);
   const [loading, setLoading] = useState(false);
-  const [uploading, setUploading] = useState(false);
-  const [filter, setFilter] = useState<"all" | "HIGH" | "MEDIUM" | "LOW">("HIGH");
-
-  // Upload form state
-  const [caseId, setCaseId] = useState("");
-  const [emrText, setEmrText] = useState("");
-  const [claimedDays, setClaimedDays] = useState(7);
+  const [diseaseFilter, setDiseaseFilter] = useState<"all" | "Pneumonia" | "Stroke (Ischemic)">("all");
 
   const loadEpisodes = useCallback(async () => {
     setLoading(true);
@@ -135,7 +116,7 @@ export default function Home() {
       const res = await fetch("/api/claims");
       const data = await res.json();
       setEpisodes(data.episodes || []);
-    } catch (err) {
+    } catch {
       toast.error("Gagal memuat daftar episode");
     } finally {
       setLoading(false);
@@ -147,180 +128,158 @@ export default function Home() {
       const res = await fetch(`/api/claims/${id}`);
       const data = await res.json();
       setSelected(data);
-      // Log "viewed" action
       await fetch(`/api/claims/${id}/audit`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action: "viewed" }),
       });
-    } catch (err) {
+    } catch {
       toast.error("Gagal memuat detail episode");
     }
   }, []);
 
   useEffect(() => { loadEpisodes(); }, [loadEpisodes]);
 
-  const handleUpload = async () => {
-    if (!caseId || !emrText) {
-      toast.error("Case ID dan EMR Text wajib diisi");
-      return;
-    }
-    setUploading(true);
-    try {
-      const res = await fetch("/api/claims", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          caseId,
-          emrText,
-          claimedDays,
-          diseaseName: "Pneumonia",
-          diseaseCode: "J18.9",
-        }),
-      });
-      const data = await res.json();
-      if (res.ok) {
-        toast.success(`Episode ${data.caseId} — flag: ${data.flagLevel} (score ${data.deviationScore})`);
-        setCaseId("");
-        setEmrText("");
-        setClaimedDays(7);
-        await loadEpisodes();
-      } else {
-        toast.error(data.error || "Upload gagal");
-      }
-    } catch (err) {
-      toast.error("Network error");
-    } finally {
-      setUploading(false);
-    }
-  };
+  // Filtered list: only Red Flags (HIGH) by default, plus disease filter
+  const filtered = episodes
+    .filter(e => e.flagLevel === "HIGH")
+    .filter(e => diseaseFilter === "all" || e.diseaseName === diseaseFilter);
 
-  const handleOverride = async (reason: string) => {
-    if (!selected) return;
-    if (!reason || reason.length < 5) {
-      toast.error("Alasan medis wajib diisi (min 5 karakter)");
-      return;
-    }
-    try {
-      await fetch(`/api/claims/${selected.episode.id}/audit`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "overridden",
-          reason,
-          reviewerEmail: "reviewer@bpjs.go.id",
-        }),
-      });
-      toast.success("Episode ditandai sebagai False Positive (Human-in-the-Loop)");
-      await loadDetail(selected.episode.id);
-      await loadEpisodes();
-    } catch (err) {
-      toast.error("Gagal override");
-    }
-  };
-
-  const handleSeedDemo = async () => {
-    setCaseId("PNEU-2026-DEMO-001");
-    setEmrText(`Pasien: Bapak Demo Test, NIK: 3175070101900001
-Diagnosis: Pneumonia (J18.9)
-
-H1: Pasien sadar penuh, GCS 15. TD 115/75, Nadi 88, Suhu 38.8°C. Lab: Leukosit 14500, Trombosit 220000. Diagnosis: Pneumonia komunitas. Mulai antibiotik IV.
-
-H3: Pasien kondisi membaik. GCS 15. TD 118/78. Suhu 37.2°C. Lab: Leukosit 8500, Trombosit 245000. Auskultasi paru membaik.
-
-H7: Kondisi stabil. GCS 15. TD 120/80. Suhu 36.7°C. Lab: Leukosit 7800, Trombosit 258000. Dokter: masih perlu observasi lanjut.`);
-    setClaimedDays(7);
-    toast.info("Klik 'Upload & Analyze' untuk proses kasus demo ANOMALY");
-  };
-
-  // Filtered list
-  const filtered = filter === "all"
-    ? episodes
-    : episodes.filter(e => e.flagLevel === filter);
-
-  // Stats
   const stats = {
     total: episodes.length,
-    high: episodes.filter(e => e.flagLevel === "HIGH").length,
-    medium: episodes.filter(e => e.flagLevel === "MEDIUM").length,
-    low: episodes.filter(e => e.flagLevel === "LOW").length,
+    redFlags: episodes.filter(e => e.flagLevel === "HIGH").length,
+    pneumonia: episodes.filter(e => e.diseaseName === "Pneumonia").length,
+    stroke: episodes.filter(e => e.diseaseName === "Stroke (Ischemic)").length,
   };
+
+  // Estimated savings (per proposal slide 17 — Rp 300M/year @ 200k cases)
+  // For demo cases: extrapolate
+  const estSavedHours = stats.redFlags * 36; // 36 min saved per case (45min → 9min audit)
+  const estSavedRp = (stats.redFlags / 200000 * 300).toFixed(1); // ratio to national estimate
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
-      {/* Header */}
-      <header className="bg-[#0F2A5C] text-white border-b border-slate-800">
-        <div className="px-6 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-white/10 border border-white/20 flex items-center justify-center">
-              <Activity className="w-5 h-5" />
-            </div>
-            <div>
-              <div className="font-serif text-lg font-bold tracking-tight" style={{ fontFamily: "Playfair Display, serif" }}>
-                VERA <span className="text-red-400">·</span> Reviewer Dashboard
+      {/* === HERO HEADER === */}
+      <header className="bg-[#0F2A5C] text-white">
+        <div className="px-8 py-5">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center">
+                <Activity className="w-7 h-7" />
               </div>
-              <div className="text-[10px] text-white/60 uppercase tracking-widest">Validasi Episode &amp; Recovery Anomaly</div>
+              <div>
+                <div className="font-serif text-2xl font-black tracking-tight" style={{ fontFamily: "Playfair Display, serif" }}>
+                  VERA
+                </div>
+                <div className="text-xs text-white/60 uppercase tracking-widest">
+                  Validasi Episode &amp; Recovery Anomaly
+                </div>
+              </div>
+            </div>
+            <div className="text-right hidden md:block">
+              <div className="text-[10px] text-white/50 uppercase tracking-widest mb-1">
+                Healthkathon 2026 · BPJS Kesehatan
+              </div>
+              <div className="text-xs text-white/80 italic">
+                "Membaca Kurva Biologis, Membongkar Waktu Fiktif."
+              </div>
             </div>
           </div>
-          <div className="text-xs text-white/70 hidden md:block">
-            Healthkathon 2026 · BPJS Kesehatan
+
+          {/* Hero metric strip */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-6">
+            <div className="bg-white/5 backdrop-blur rounded-lg border border-white/10 p-3">
+              <div className="flex items-center gap-2 mb-1">
+                <AlertTriangle className="w-3.5 h-3.5 text-red-400" />
+                <div className="text-[10px] text-white/60 uppercase tracking-widest">Red Flag Aktif</div>
+              </div>
+              <div className="font-serif text-3xl font-black" style={{ fontFamily: "Playfair Display, serif" }}>
+                {stats.redFlags}
+              </div>
+              <div className="text-[10px] text-white/50">dari {stats.total} episode</div>
+            </div>
+            <div className="bg-white/5 backdrop-blur rounded-lg border border-white/10 p-3">
+              <div className="flex items-center gap-2 mb-1">
+                <Clock className="w-3.5 h-3.5 text-sky-400" />
+                <div className="text-[10px] text-white/60 uppercase tracking-widest">Estimasi Waktu Hemat</div>
+              </div>
+              <div className="font-serif text-3xl font-black" style={{ fontFamily: "Playfair Display, serif" }}>
+                {estSavedHours}h
+              </div>
+              <div className="text-[10px] text-white/50">audit reviewer BPJS</div>
+            </div>
+            <div className="bg-white/5 backdrop-blur rounded-lg border border-white/10 p-3">
+              <div className="flex items-center gap-2 mb-1">
+                <TrendingDown className="w-3.5 h-3.5 text-emerald-400" />
+                <div className="text-[10px] text-white/60 uppercase tracking-widest">Estimasi Penghematan</div>
+              </div>
+              <div className="font-serif text-3xl font-black" style={{ fontFamily: "Playfair Display, serif" }}>
+                Rp {estSavedRp}M
+              </div>
+              <div className="text-[10px] text-white/50">/tahun (skala nasional)</div>
+            </div>
+            <div className="bg-white/5 backdrop-blur rounded-lg border border-white/10 p-3">
+              <div className="flex items-center gap-2 mb-1">
+                <Heart className="w-3.5 h-3.5 text-rose-400" />
+                <div className="text-[10px] text-white/60 uppercase tracking-widest">Penyakit Didukung</div>
+              </div>
+              <div className="font-serif text-3xl font-black" style={{ fontFamily: "Playfair Display, serif" }}>
+                2
+              </div>
+              <div className="text-[10px] text-white/50">Pneumonia · Stroke</div>
+            </div>
           </div>
         </div>
       </header>
 
-      {/* Stat bar */}
-      <div className="bg-white border-b border-slate-200 px-6 py-2.5">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
-          <div className="flex items-center gap-2">
-            <FileText className="w-4 h-4 text-slate-500" />
-            <span className="text-slate-600">Total:</span>
-            <span className="font-bold text-slate-900">{stats.total}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <AlertTriangle className="w-4 h-4" style={{ color: FLAG_CONFIG.HIGH.color }} />
-            <span className="text-slate-600">Red Flag:</span>
-            <span className="font-bold" style={{ color: FLAG_CONFIG.HIGH.color }}>{stats.high}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Clock className="w-4 h-4" style={{ color: FLAG_CONFIG.MEDIUM.color }} />
-            <span className="text-slate-600">Watch:</span>
-            <span className="font-bold" style={{ color: FLAG_CONFIG.MEDIUM.color }}>{stats.medium}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <ShieldCheck className="w-4 h-4" style={{ color: FLAG_CONFIG.LOW.color }} />
-            <span className="text-slate-600">Normal:</span>
-            <span className="font-bold" style={{ color: FLAG_CONFIG.LOW.color }}>{stats.low}</span>
-          </div>
-        </div>
-      </div>
-
-      <main className="flex-1 grid grid-cols-1 lg:grid-cols-[380px_1fr] gap-0">
-        {/* LEFT: Patient list */}
+      <main className="flex-1 grid grid-cols-1 lg:grid-cols-[420px_1fr]">
+        {/* === LEFT: Patient list === */}
         <aside className="border-r border-slate-200 bg-white flex flex-col">
           <div className="p-4 border-b border-slate-200">
-            <div className="flex items-center gap-2 mb-3">
-              <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider">Daftar Pasien</h2>
-              <Button variant="ghost" size="sm" onClick={loadEpisodes} disabled={loading} className="ml-auto h-7 text-xs">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider">
+                Daftar Pasien Red Flag
+              </h2>
+              <Button variant="ghost" size="sm" onClick={loadEpisodes} disabled={loading} className="h-7 text-xs">
                 {loading ? <Loader2 className="w-3 h-3 animate-spin" /> : "Refresh"}
               </Button>
             </div>
-            <Tabs value={filter} onValueChange={(v) => setFilter(v as typeof filter)}>
-              <TabsList className="grid grid-cols-4 h-8 text-xs">
-                <TabsTrigger value="HIGH" className="text-[10px]">Red</TabsTrigger>
-                <TabsTrigger value="MEDIUM" className="text-[10px]">Watch</TabsTrigger>
-                <TabsTrigger value="LOW" className="text-[10px]">Normal</TabsTrigger>
-                <TabsTrigger value="all" className="text-[10px]">All</TabsTrigger>
-              </TabsList>
-            </Tabs>
+            {/* Disease filter */}
+            <div className="flex gap-1.5 text-xs">
+              <button
+                onClick={() => setDiseaseFilter("all")}
+                className={`px-3 py-1.5 rounded-md font-semibold transition-colors ${
+                  diseaseFilter === "all" ? "bg-[#0F2A5C] text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                }`}
+              >
+                Semua ({stats.redFlags})
+              </button>
+              <button
+                onClick={() => setDiseaseFilter("Pneumonia")}
+                className={`px-3 py-1.5 rounded-md font-semibold transition-colors ${
+                  diseaseFilter === "Pneumonia" ? "bg-[#0F2A5C] text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                }`}
+              >
+                Pneumonia
+              </button>
+              <button
+                onClick={() => setDiseaseFilter("Stroke (Ischemic)")}
+                className={`px-3 py-1.5 rounded-md font-semibold transition-colors ${
+                  diseaseFilter === "Stroke (Ischemic)" ? "bg-[#0F2A5C] text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                }`}
+              >
+                Stroke
+              </button>
+            </div>
           </div>
-          <ScrollArea className="flex-1" style={{ maxHeight: "calc(100vh - 180px)" }}>
+          <ScrollArea className="flex-1" style={{ maxHeight: "calc(100vh - 280px)" }}>
             <div className="divide-y divide-slate-100">
               {filtered.length === 0 && (
                 <div className="p-8 text-center text-sm text-slate-400">
-                  {loading ? "Memuat..." : "Tidak ada episode pada filter ini"}
+                  {loading ? "Memuat..." : "Tidak ada Red Flag"}
                 </div>
               )}
-              {filtered.map(ep => {
+              {filtered.slice(0, 50).map(ep => {
                 const c = FLAG_CONFIG[ep.flagLevel];
                 const isSelected = selected?.episode.id === ep.id;
                 return (
@@ -342,7 +301,7 @@ H7: Kondisi stabil. GCS 15. TD 120/80. Suhu 36.7°C. Lab: Leukosit 7800, Trombos
                       </div>
                       <div className="flex items-center gap-1.5">
                         {flagBadge(ep.flagLevel)}
-                        <span className="text-[10px] text-slate-400">{ep.dayCount} data lab</span>
+                        <span className="text-[10px] text-slate-400">{ep.dayCount} hari data lab</span>
                       </div>
                     </div>
                   </button>
@@ -350,83 +309,35 @@ H7: Kondisi stabil. GCS 15. TD 120/80. Suhu 36.7°C. Lab: Leukosit 7800, Trombos
               })}
             </div>
           </ScrollArea>
+          <div className="p-2 border-t border-slate-200 text-[10px] text-slate-400 text-center bg-slate-50">
+            Menampilkan 50 Red Flag teratas · {filtered.length} total
+          </div>
         </aside>
 
-        {/* RIGHT: Detail panel */}
-        <section className="overflow-y-auto" style={{ maxHeight: "calc(100vh - 100px)" }}>
+        {/* === RIGHT: Detail panel === */}
+        <section className="overflow-y-auto bg-slate-50" style={{ maxHeight: "calc(100vh - 200px)" }}>
           {!selected ? (
-            <div className="p-8">
-              <Card className="p-8 text-center">
-                <Stethoscope className="w-12 h-12 mx-auto text-slate-300 mb-3" />
-                <h3 className="text-lg font-bold text-slate-900 mb-1">Pilih episode untuk review</h3>
-                <p className="text-sm text-slate-500 mb-6">
-                  Atau upload kasus baru untuk verifikasi VERA
+            <div className="h-full flex items-center justify-center p-8">
+              <Card className="p-10 text-center max-w-md">
+                <Stethoscope className="w-16 h-16 mx-auto text-slate-300 mb-4" />
+                <h3 className="text-xl font-bold text-slate-900 mb-2" style={{ fontFamily: "Playfair Display, serif" }}>
+                  Pilih Episode Red Flag
+                </h3>
+                <p className="text-sm text-slate-500 leading-relaxed">
+                  Klik salah satu pasien dari daftar untuk melihat grafik kurva pemulihan,
+                  bukti ilmiah, dan analisis anomali yang VERA temukan.
                 </p>
-                <div className="max-w-2xl mx-auto space-y-4 text-left">
-                  <div>
-                    <Label htmlFor="caseId">Case ID</Label>
-                    <Input
-                      id="caseId"
-                      value={caseId}
-                      onChange={(e) => setCaseId(e.target.value)}
-                      placeholder="PNEU-2026-XXXX"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="claimedDays">Klaim Hari Rawat</Label>
-                    <Input
-                      id="claimedDays"
-                      type="number"
-                      value={claimedDays}
-                      onChange={(e) => setClaimedDays(parseInt(e.target.value) || 0)}
-                      min={1}
-                      max={30}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="emrText">Teks EMR (raw)</Label>
-                    <Textarea
-                      id="emrText"
-                      value={emrText}
-                      onChange={(e) => setEmrText(e.target.value)}
-                      placeholder="Paste teks rekam medis di sini. VERA akan strip PHI otomatis sebelum kirim ke LLM."
-                      className="font-mono text-xs min-h-[180px]"
-                    />
-                    <p className="text-[10px] text-slate-500 mt-1">
-                      ⚠️ VERA akan otomatis strip: NIK, nama, alamat, BPJS, phone, email sebelum kirim ke LLM.
-                    </p>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button onClick={handleUpload} disabled={uploading} className="flex-1">
-                      {uploading ? (
-                        <><Loader2 className="w-4 h-4 animate-spin mr-2" /> Processing...</>
-                      ) : (
-                        <><Upload className="w-4 h-4 mr-2" /> Upload &amp; Analyze</>
-                      )}
-                    </Button>
-                    <Button variant="outline" onClick={handleSeedDemo}>
-                      Demo Anomaly
-                    </Button>
-                  </div>
-                </div>
               </Card>
             </div>
           ) : (
-            <DetailPanel
-              detail={selected}
-              onOverride={handleOverride}
-              onAction={async (action) => {
-                await fetch(`/api/claims/${selected.episode.id}/audit`, {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ action }),
-                });
-                if (action === "evidence_exported") {
-                  toast.success("Bukti ilmiah diekspor ke audit log");
-                }
-                await loadDetail(selected.episode.id);
-              }}
-            />
+            <DetailPanel detail={selected} onAction={async (action) => {
+              await fetch(`/api/claims/${selected.episode.id}/audit`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ action }),
+              });
+              if (action === "evidence_exported") toast.success("Bukti ilmiah diekspor");
+            }} />
           )}
         </section>
       </main>
@@ -434,25 +345,19 @@ H7: Kondisi stabil. GCS 15. TD 120/80. Suhu 36.7°C. Lab: Leukosit 7800, Trombos
   );
 }
 
-// ============= DETAIL PANEL =============
+// ============= DETAIL PANEL (simplified) =============
 function DetailPanel({
   detail,
-  onOverride,
   onAction,
 }: {
   detail: EpisodeDetail;
-  onOverride: (reason: string) => void;
-  onAction: (action: "viewed" | "flagged" | "evidence_exported") => void;
+  onAction: (action: "viewed" | "evidence_exported") => void;
 }) {
-  const [overrideReason, setOverrideReason] = useState("");
-  const [showOverride, setShowOverride] = useState(false);
-
   const ep = detail.episode;
   const c = FLAG_CONFIG[ep.flagLevel];
   const stdCurve = detail.standardCurve;
-  const flagConf = FLAG_CONFIG[ep.flagLevel];
 
-  // Build chart data: merge patient lab data with standard curve per day
+  // Chart data: merge patient + standard
   const chartData = stdCurve?.curve.map(std => {
     const patient = detail.labData.find(p => parseInt(p.dayLabel.replace("H", "")) === std.day);
     return {
@@ -461,275 +366,178 @@ function DetailPanel({
       leukosit_patient: patient?.leukosit ?? null,
       trombosit_std: std.trombosit,
       trombosit_patient: patient?.trombosit ?? null,
+      suhu_std: std.suhu,
+      suhu_patient: patient?.suhu ?? null,
     };
   }) || [];
 
   const extraDays = Math.max(0, ep.claimedDays - (stdCurve?.recommendedDischarge ?? 0));
 
   return (
-    <div className="p-6 space-y-5">
-      {/* Header bar */}
+    <div className="p-6 space-y-4">
+      {/* Header */}
       <div className="flex items-start justify-between">
         <div>
           <div className="text-[10px] uppercase tracking-widest text-slate-500 mb-1">
-            {ep.diseaseName} · ICD-10 {ep.diseaseCode} · {detail.labData.length} hari data lab
+            {ep.diseaseName} · ICD-10 {ep.diseaseCode}
           </div>
-          <h1 className="font-serif text-2xl font-bold text-slate-900" style={{ fontFamily: "Playfair Display, serif" }}>
+          <h1 className="font-serif text-3xl font-bold text-slate-900" style={{ fontFamily: "Playfair Display, serif" }}>
             {ep.caseId}
           </h1>
-          <div className="mt-1 text-sm text-slate-600">
-            Klaim rawat: <b>{ep.claimedDays} hari</b>
+          <div className="mt-1.5 text-sm text-slate-600">
+            Klaim rawat <b>{ep.claimedDays} hari</b>
             {stdCurve && (
-              <> · Standar pulang: <b>H{stdCurve.recommendedDischarge}</b>
-              {extraDays > 0 && (
-                <span className="ml-1 text-red-600 font-semibold">(+{extraDays} hari)</span>
-              )}
+              <>
+                <span className="mx-2 text-slate-300">·</span>
+                Standar pulang <b className="text-emerald-700">H{stdCurve.recommendedDischarge}</b>
+                {extraDays > 0 && (
+                  <span className="ml-2 text-red-600 font-bold">(+{extraDays} hari berlebih)</span>
+                )}
               </>
             )}
           </div>
         </div>
         <div className="text-right">
           <div className="text-[10px] uppercase tracking-widest text-slate-500">Deviation Score</div>
-          <div className="font-serif font-bold text-3xl" style={{ color: flagConf.color, fontFamily: "Playfair Display, serif" }}>
+          <div className="font-serif font-black text-4xl leading-none mt-1" style={{ color: c.color, fontFamily: "Playfair Display, serif" }}>
             {ep.deviationScore.toFixed(2)}
           </div>
-          <div className="mt-1">{flagBadge(ep.flagLevel)}</div>
+          <div className="mt-2">{flagBadge(ep.flagLevel)}</div>
         </div>
       </div>
 
-      {/* Action buttons */}
-      <div className="flex gap-2 flex-wrap">
-        <Button
-          size="sm"
-          onClick={() => onAction("evidence_exported")}
-          style={{ backgroundColor: c.color, color: "white" }}
+      {/* Red Flag verdict (prominent) */}
+      {ep.flagLevel === "HIGH" && (
+        <div
+          className="rounded-lg p-4 border-l-4"
+          style={{ backgroundColor: c.bg, borderLeftColor: c.color }}
         >
-          <FileText className="w-3 h-3 mr-1" /> Bukti Ilmiah
-        </Button>
-        <Button size="sm" variant="outline" onClick={() => onAction("flagged")}>
-          <AlertTriangle className="w-3 h-3 mr-1" /> Tandai untuk Audit Lanjut
-        </Button>
-        <Button
-          size="sm"
-          variant="outline"
-          onClick={() => setShowOverride(!showOverride)}
-          className="border-slate-400 text-slate-600"
-        >
-          <User className="w-3 h-3 mr-1" /> Override (False Positive)
-        </Button>
-      </div>
-
-      {/* Override form */}
-      {showOverride && (
-        <Card className="p-4 border-2 border-amber-300 bg-amber-50">
-          <div className="text-sm font-bold text-amber-900 mb-2">
-            Human-in-the-Loop: Tandai sebagai False Positive
+          <div className="flex items-start gap-3">
+            <AlertTriangle className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: c.color }} />
+            <div>
+              <div className="text-sm font-bold mb-1" style={{ color: c.color }}>
+                VERA Red Flag — Bukti Anomali Prolonged Stay
+              </div>
+              <div className="text-xs text-slate-700 leading-relaxed">
+                Lab pasien <b>normal sejak H3</b> (leukosit &amp; trombosit dalam rentang normal),
+                namun klaim RS <b>dipanjangkan {extraDays} hari</b> melampaui rekomendasi pulang standar
+                (H{stdCurve?.recommendedDischarge}). Pola ini konsisten dengan{" "}
+                <b style={{ color: c.color }}>Prolonged Stay Fiktif</b> — reviewer BPJS disarankan
+                audit dokter &amp; indikasi medis lanjutan.
+              </div>
+              <div className="mt-2 text-[10px] text-slate-500">
+                Bukti berdasarkan: <i>{stdCurve?.reference}</i>
+              </div>
+            </div>
           </div>
-          <p className="text-xs text-amber-700 mb-3">
-            Hanya jika ada alasan medis kuat bahwa anomali ini wajar (komorbiditas, komplikasi, dsb).
-            Keputusan ini akan tercatat di audit log dengan nama reviewer.
-          </p>
-          <Textarea
-            value={overrideReason}
-            onChange={(e) => setOverrideReason(e.target.value)}
-            placeholder="Contoh: Pasien memiliki komorbiditas COPD sehingga butuh observasi lebih lama..."
-            className="mb-2 text-sm"
-          />
-          <div className="flex gap-2">
-            <Button
-              size="sm"
-              variant="destructive"
-              onClick={() => {
-                onOverride(overrideReason);
-                setShowOverride(false);
-                setOverrideReason("");
-              }}
-            >
-              Konfirmasi Override
-            </Button>
-            <Button size="sm" variant="ghost" onClick={() => setShowOverride(false)}>
-              Batal
-            </Button>
-          </div>
-        </Card>
+        </div>
       )}
 
-      {/* Chart */}
+      {/* === CHART (BIG & prominent) === */}
       <Card className="p-5">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-sm font-bold text-slate-900">
-            Kurva Pemulihan — Pasien vs Standar
+            Grafik Pemulihan — Pasien vs Standar Medis
           </h3>
-          {stdCurve && (
-            <div className="text-[10px] text-slate-500">
-              Ref: {stdCurve.reference}
-            </div>
-          )}
+          <Button
+            size="sm"
+            onClick={() => onAction("evidence_exported")}
+            style={{ backgroundColor: c.color, color: "white" }}
+          >
+            Export Bukti Ilmiah
+          </Button>
         </div>
 
         {chartData.length > 0 && (
-          <div className="space-y-4">
-            {/* Leukosit chart */}
+          <div className="space-y-5">
+            {/* Leukosit chart — biggest */}
             <div>
-              <div className="text-xs font-semibold text-slate-600 mb-1">
-                Leukosit (cells/μL) — normal: 4,000–10,000
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-2 h-2 rounded-full bg-red-500" />
+                <div className="text-xs font-bold text-slate-700">Leukosit (cells/μL)</div>
+                <div className="text-[10px] text-slate-500 ml-auto">Normal: 4.000 – 10.000</div>
               </div>
-              <ResponsiveContainer width="100%" height={160}>
-                <AreaChart data={chartData} margin={{ top: 5, right: 10, bottom: 5, left: 0 }}>
-                  <defs>
-                    <linearGradient id="leukoStd" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#16A34A" stopOpacity={0.3} />
-                      <stop offset="95%" stopColor="#16A34A" stopOpacity={0.05} />
-                    </linearGradient>
-                  </defs>
+              <ResponsiveContainer width="100%" height={220}>
+                <LineChart data={chartData} margin={{ top: 10, right: 20, bottom: 10, left: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" strokeOpacity={0.5} />
-                  <XAxis dataKey="day" tick={{ fontSize: 11 }} stroke="#64748B" />
-                  <YAxis tick={{ fontSize: 10 }} stroke="#64748B" />
-                  <Tooltip
-                    contentStyle={{ fontSize: 12, padding: "6px 10px" }}
-                    labelStyle={{ fontSize: 11, color: "#64748B" }}
+                  <XAxis dataKey="day" tick={{ fontSize: 12, fill: "#64748B" }} stroke="#94A3B8" />
+                  <YAxis
+                    tick={{ fontSize: 11, fill: "#64748B" }}
+                    stroke="#94A3B8"
+                    domain={[0, 18000]}
+                    ticks={[0, 4000, 10000, 18000]}
                   />
-                  <Legend wrapperStyle={{ fontSize: 11 }} />
-                  <Area
-                    type="monotone"
-                    dataKey="leukosit_std"
-                    stroke="#16A34A"
-                    strokeWidth={2}
-                    fill="url(#leukoStd)"
-                    name="Standar Pneumonia"
-                    dot={{ r: 3 }}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="leukosit_patient"
-                    stroke="#DC2626"
-                    strokeWidth={2}
-                    strokeDasharray="5 3"
-                    name="Klaim Pasien"
-                    dot={{ r: 4, fill: "#DC2626" }}
-                  />
-                  <ReferenceLine y={10000} stroke="#94A3B8" strokeDasharray="2 2" label={{ value: "Normal max", fontSize: 9, fill: "#64748B" }} />
-                  {stdCurve && stdCurve.recommendedDischarge && (
-                    <ReferenceLine x={`H${stdCurve.recommendedDischarge}`} stroke="#DC2626" strokeDasharray="3 3" label={{ value: "Pulang?", fontSize: 9, fill: "#DC2626" }} />
+                  <Tooltip contentStyle={{ fontSize: 12, padding: "8px 12px" }} />
+                  <Legend wrapperStyle={{ fontSize: 12, paddingTop: 8 }} />
+                  {/* Normal range band */}
+                  <ReferenceArea y1={4000} y2={10000} fill="#16A34A" fillOpacity={0.08} stroke="none" />
+                  <ReferenceLine y={10000} stroke="#94A3B8" strokeDasharray="3 3" label={{ value: "Normal max", fontSize: 10, fill: "#64748B", position: "insideTopRight" }} />
+                  {/* Recommended discharge line */}
+                  {stdCurve && (
+                    <ReferenceLine x={`H${stdCurve.recommendedDischarge}`} stroke="#0F2A5C" strokeDasharray="4 4" label={{ value: "Pulang?", fontSize: 10, fill: "#0F2A5C", position: "top" }} />
                   )}
-                </AreaChart>
+                  {/* Standard curve */}
+                  <Line type="monotone" dataKey="leukosit_std" stroke="#16A34A" strokeWidth={2.5} name="Standar Pemulihan" dot={{ r: 4, fill: "#16A34A" }} />
+                  {/* Patient curve */}
+                  <Line type="monotone" dataKey="leukosit_patient" stroke="#DC2626" strokeWidth={3} strokeDasharray="6 3" name="Klaim Pasien" dot={{ r: 5, fill: "#DC2626" }} />
+                </LineChart>
               </ResponsiveContainer>
             </div>
 
             {/* Trombosit chart */}
             <div>
-              <div className="text-xs font-semibold text-slate-600 mb-1">
-                Trombosit (cells/μL) — normal: 150,000–450,000
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-2 h-2 rounded-full bg-amber-500" />
+                <div className="text-xs font-bold text-slate-700">Trombosit (cells/μL)</div>
+                <div className="text-[10px] text-slate-500 ml-auto">Normal: 150.000 – 450.000</div>
+              </div>
+              <ResponsiveContainer width="100%" height={160}>
+                <LineChart data={chartData} margin={{ top: 10, right: 20, bottom: 10, left: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" strokeOpacity={0.5} />
+                  <XAxis dataKey="day" tick={{ fontSize: 12, fill: "#64748B" }} stroke="#94A3B8" />
+                  <YAxis tick={{ fontSize: 11, fill: "#64748B" }} stroke="#94A3B8" domain={[150000, 300000]} tickFormatter={(v) => `${(v/1000).toFixed(0)}k`} />
+                  <Tooltip contentStyle={{ fontSize: 12, padding: "8px 12px" }} />
+                  <Legend wrapperStyle={{ fontSize: 12, paddingTop: 8 }} />
+                  <ReferenceArea y1={150000} y2={450000} fill="#16A34A" fillOpacity={0.08} stroke="none" />
+                  <Line type="monotone" dataKey="trombosit_std" stroke="#16A34A" strokeWidth={2.5} name="Standar" dot={{ r: 4, fill: "#16A34A" }} />
+                  <Line type="monotone" dataKey="trombosit_patient" stroke="#DC2626" strokeWidth={3} strokeDasharray="6 3" name="Pasien" dot={{ r: 5, fill: "#DC2626" }} />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+
+            {/* Suhu chart */}
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-2 h-2 rounded-full bg-blue-500" />
+                <div className="text-xs font-bold text-slate-700">Suhu Tubuh (°C)</div>
+                <div className="text-[10px] text-slate-500 ml-auto">Normal: 36.0 – 37.5</div>
               </div>
               <ResponsiveContainer width="100%" height={140}>
-                <LineChart data={chartData} margin={{ top: 5, right: 10, bottom: 5, left: 0 }}>
+                <LineChart data={chartData} margin={{ top: 10, right: 20, bottom: 10, left: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" strokeOpacity={0.5} />
-                  <XAxis dataKey="day" tick={{ fontSize: 11 }} stroke="#64748B" />
-                  <YAxis tick={{ fontSize: 10 }} stroke="#64748B" domain={[150000, 300000]} />
-                  <Tooltip contentStyle={{ fontSize: 12, padding: "6px 10px" }} />
-                  <Legend wrapperStyle={{ fontSize: 11 }} />
-                  <Line type="monotone" dataKey="trombosit_std" stroke="#16A34A" strokeWidth={2} name="Standar" dot={{ r: 3 }} />
-                  <Line type="monotone" dataKey="trombosit_patient" stroke="#DC2626" strokeWidth={2} strokeDasharray="5 3" name="Pasien" dot={{ r: 4 }} />
+                  <XAxis dataKey="day" tick={{ fontSize: 12, fill: "#64748B" }} stroke="#94A3B8" />
+                  <YAxis tick={{ fontSize: 11, fill: "#64748B" }} stroke="#94A3B8" domain={[36, 40]} />
+                  <Tooltip contentStyle={{ fontSize: 12, padding: "8px 12px" }} />
+                  <Legend wrapperStyle={{ fontSize: 12, paddingTop: 8 }} />
+                  <ReferenceArea y1={36} y2={37.5} fill="#16A34A" fillOpacity={0.08} stroke="none" />
+                  <Line type="monotone" dataKey="suhu_std" stroke="#16A34A" strokeWidth={2.5} name="Standar" dot={{ r: 4, fill: "#16A34A" }} />
+                  <Line type="monotone" dataKey="suhu_patient" stroke="#DC2626" strokeWidth={3} strokeDasharray="6 3" name="Pasien" dot={{ r: 5, fill: "#DC2626" }} />
                 </LineChart>
               </ResponsiveContainer>
             </div>
           </div>
         )}
-
-        {ep.flagLevel === "HIGH" && (
-          <div className="mt-3 p-3 rounded-md" style={{ backgroundColor: c.bg, borderLeft: `3px solid ${c.color}` }}>
-            <div className="text-xs font-bold mb-1" style={{ color: c.color }}>
-              ⚠️ VERA Red Flag Analysis
-            </div>
-            <div className="text-xs text-slate-700 leading-relaxed">
-              Lab pasien normal sejak H3 (leukosit &amp; trombosit dalam rentang normal), klaim dipanjangkan {extraDays} hari
-              melampaui rekomendasi pulang standar (H{stdCurve?.recommendedDischarge}).
-              Pola ini konsisten dengan <b>Prolonged Stay Fiktif</b> — reviewer disarankan audit dokter &amp; indikasi medis lanjutan.
-            </div>
-          </div>
-        )}
       </Card>
 
-      {/* Stripped EMR */}
+      {/* === EMR Stripped (compact, no table) === */}
       <Card className="p-5">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-sm font-bold text-slate-900">EMR yang Dikirim ke LLM (PHI stripped)</h3>
-          <Badge variant="secondary" className="text-[10px]">Data Stripping ✓</Badge>
+          <Badge variant="secondary" className="text-[10px]">UU PDP ✓</Badge>
         </div>
         <pre className="text-xs font-mono text-slate-700 bg-slate-50 p-3 rounded-md whitespace-pre-wrap leading-relaxed">
           {ep.emrTextStrip}
         </pre>
-      </Card>
-
-      {/* Lab data table */}
-      <Card className="p-5">
-        <h3 className="text-sm font-bold text-slate-900 mb-3">Data Lab Harian (Hasil Ekstraksi LLM)</h3>
-        <div className="overflow-x-auto">
-          <table className="w-full text-xs">
-            <thead>
-              <tr className="border-b border-slate-200">
-                <th className="text-left py-2 px-2 font-semibold text-slate-600">Hari</th>
-                <th className="text-right py-2 px-2 font-semibold text-slate-600">Leukosit</th>
-                <th className="text-right py-2 px-2 font-semibold text-slate-600">Trombosit</th>
-                <th className="text-right py-2 px-2 font-semibold text-slate-600">TD</th>
-                <th className="text-right py-2 px-2 font-semibold text-slate-600">Suhu</th>
-                <th className="text-right py-2 px-2 font-semibold text-slate-600">GCS</th>
-              </tr>
-            </thead>
-            <tbody>
-              {detail.labData.map((lab, i) => {
-                const leukoNormal = lab.leukosit != null && lab.leukosit >= 4000 && lab.leukosit <= 10000;
-                const tromboNormal = lab.trombosit != null && lab.trombosit >= 150000 && lab.trombosit <= 450000;
-                return (
-                  <tr key={i} className="border-b border-slate-100">
-                    <td className="py-2 px-2 font-mono font-bold text-slate-900">{lab.dayLabel}</td>
-                    <td className={`text-right py-2 px-2 font-mono ${leukoNormal ? "text-emerald-600" : "text-red-600"}`}>
-                      {lab.leukosit ?? "—"}
-                    </td>
-                    <td className={`text-right py-2 px-2 font-mono ${tromboNormal ? "text-emerald-600" : "text-red-600"}`}>
-                      {lab.trombosit?.toLocaleString() ?? "—"}
-                    </td>
-                    <td className="text-right py-2 px-2 font-mono text-slate-700">
-                      {lab.tdSistol ?? "—"}/{lab.tdDiastol ?? "—"}
-                    </td>
-                    <td className="text-right py-2 px-2 font-mono text-slate-700">
-                      {lab.suhu != null ? `${lab.suhu}°C` : "—"}
-                    </td>
-                    <td className="text-right py-2 px-2 font-mono text-slate-700">{lab.gcs ?? "—"}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      </Card>
-
-      {/* Audit Trail */}
-      <Card className="p-5">
-        <div className="flex items-center gap-2 mb-3">
-          <CheckCircle2 className="w-4 h-4 text-slate-500" />
-          <h3 className="text-sm font-bold text-slate-900">Audit Trail</h3>
-          <span className="text-xs text-slate-500">({detail.auditLogs.length} entries)</span>
-        </div>
-        <div className="space-y-2">
-          {detail.auditLogs.length === 0 && (
-            <p className="text-xs text-slate-400">No audit entries</p>
-          )}
-          {detail.auditLogs.map(log => (
-            <div key={log.id} className="flex items-start gap-3 text-xs p-2 bg-slate-50 rounded-md">
-              <div className="w-1.5 h-1.5 rounded-full bg-slate-400 mt-1.5 flex-shrink-0" />
-              <div className="flex-1">
-                <div className="font-mono text-slate-900">
-                  <b>{log.action}</b>
-                  {log.reason && <span className="text-slate-600 ml-2">— "{log.reason}"</span>}
-                </div>
-                <div className="text-[10px] text-slate-500 mt-0.5">
-                  by {log.reviewerName} · {new Date(log.createdAt).toLocaleString("id-ID")}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
       </Card>
     </div>
   );

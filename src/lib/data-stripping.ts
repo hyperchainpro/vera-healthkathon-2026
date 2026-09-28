@@ -19,8 +19,8 @@
  */
 
 const PHI_PATTERNS: Array<{ pattern: RegExp; replacement: string; label: string }> = [
-  // NIK (16 digits) — Indonesian National ID
-  { pattern: /\b\d{16}\b/g, replacement: "[NIK-REDACTED]", label: "NIK" },
+  // NIK (16 digits) — Indonesian National ID (be lenient: match 15-16 digit sequences)
+  { pattern: /\b\d{15,16}\b/g, replacement: "[NIK-REDACTED]", label: "NIK" },
 
   // BPJS card number (13 digits starting with 0001 or similar)
   { pattern: /\b0\d{12,13}\b/g, replacement: "[BPJS-REDACTED]", label: "BPJS" },
