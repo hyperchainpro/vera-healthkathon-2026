@@ -2,9 +2,9 @@
  * VERA API — Audit Trail + Human-in-the-Loop Override (Todo #17, #18)
  * POST /api/claims/[id]/audit
  *
- * Records reviewer actions: viewed, flagged, overridden, evidence_exported.
+ * Records user actions: viewed, flagged, overridden, evidence_exported.
  * For "overridden" action, requires a medical reason (slide 18 PRD —
- * Human-in-the-Loop: reviewer can mark as false positive with justification).
+ * Human-in-the-Loop: user can mark as false positive with justification).
  */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -39,33 +39,24 @@ export async function POST(
       );
     }
 
-    // Find or create reviewer
-    let reviewerId: string | null = null;
+    // Find user by email
+    let userId: string | null = null;
     if (body.reviewerEmail) {
-      let reviewer = await db.reviewer.findUnique({
-        where: { email: body.reviewerEmail },
+      const user = await db.user.findUnique({
+        where: { email: body.reviewerEmail.toLowerCase().trim() },
       });
-      if (!reviewer) {
-        reviewer = await db.reviewer.create({
-          data: {
-            email: body.reviewerEmail,
-            name: body.reviewerEmail.split("@")[0],
-            role: "reviewer",
-          },
-        });
-      }
-      reviewerId = reviewer.id;
+      if (user) userId = user.id;
     }
 
     // Create audit log
     const audit = await db.auditLog.create({
       data: {
         episodeId: id,
-        reviewerId,
+        userId,
         action: body.action,
         reason: body.reason,
       },
-      include: { reviewer: true },
+      include: { user: true },
     });
 
     // If overridden, update episode status
@@ -79,7 +70,7 @@ export async function POST(
     return NextResponse.json({
       auditId: audit.id,
       action: audit.action,
-      reviewerName: audit.reviewer?.name ?? "anonymous",
+      reviewerName: audit.user?.name ?? "anonymous",
       createdAt: audit.createdAt,
     });
   } catch (err) {

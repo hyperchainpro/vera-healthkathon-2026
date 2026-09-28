@@ -23,7 +23,10 @@ export async function GET(
       where: { id },
       include: {
         labData: { orderBy: { dayLabel: "asc" } },
-        auditLogs: { orderBy: { createdAt: "desc" }, include: { reviewer: true } },
+        auditLogs: {
+          orderBy: { createdAt: "desc" },
+          include: { user: { select: { id: true, name: true, email: true, role: true, avatar: true } } },
+        },
       },
     });
 
@@ -71,7 +74,7 @@ export async function GET(
         id: a.id,
         action: a.action,
         reason: a.reason,
-        reviewerName: a.reviewer?.name ?? "system",
+        reviewerName: a.user?.name ?? "system",
         metadata: a.metadata,
         createdAt: a.createdAt,
       })),
