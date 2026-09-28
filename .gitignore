@@ -61,3 +61,9 @@ tool-results/
 # VERA: worklog & scripts internal tidak perlu di repo publik
 worklog.md
 agent-ctx/
+.z-ai-config
+
+# VERA: env files (DEPLOYMENT — gunakan Vercel dashboard untuk set env vars)
+.env.local
+.env.production
+.env*.local
