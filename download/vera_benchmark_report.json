@@ -1,0 +1,26 @@
+{
+  "totalCases": 100,
+  "successfulExtractions": 100,
+  "failedExtractions": 0,
+  "schemaValidationsPassed": 100,
+  "schemaValidationsFailed": 0,
+  "retriedExtractions": 0,
+  "backendDistribution": {
+    "openrouter": 0,
+    "zai": 0,
+    "regex": 100
+  },
+  "diseaseDistribution": {
+    "Pneumonia": 50,
+    "Stroke": 50
+  },
+  "flagDistribution": {
+    "HIGH": 32,
+    "MEDIUM": 0,
+    "LOW": 68
+  },
+  "anomalyDetectionAccuracy": 100,
+  "averageExtractionTimeMs": 0,
+  "hallucinationRate": 1.8888888888888888,
+  "timestamp": "2026-09-28T08:09:13.069Z"
+}
