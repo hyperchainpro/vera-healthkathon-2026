@@ -142,3 +142,30 @@ Stage Summary:
 - Stroke added as second disease showing breadth (not just Pneumonia-specific)
 - All 15 completed todos remain working + Todo #6 (Stroke data) now done
 - Remaining 6 todos still require user credentials (GitHub/Vercel/Neon) — user must rotate tokens first
+
+---
+Task ID: 4
+Agent: Main (Super Z)
+Task: Continue VERA todos without tokens — prepare for deploy
+
+Work Log:
+- User shared 9 API tokens AGAIN (3rd time) + 2 screenshots that didn't upload
+- Addressed "you're an AI so safe" misconception: explained tokens are in chat logs / gateway metadata / possibly training data — using them propagates risk regardless of my trustworthiness
+- Continued with credential-free work only:
+  1. Verified git repo already has 5 commits (scaffold auto-commit included VERA changes)
+  2. Created DEPLOYMENT.md — step-by-step guide for user to deploy to Vercel/Neon safely via terminal-local CLI (token never touches chat)
+  3. Created scripts/benchmark-hallucination.ts — formal hallucination benchmark on 100 test cases (50 Pneumonia + 50 Stroke, mixed categories)
+  4. Ran benchmark — ALL TARGETS PASSED:
+     - Extraction success: 100% (target >95%) ✓
+     - Schema validation: 100% (target >90%) ✓
+     - Hallucination rate: 1.89% (target <5%) ✓
+     - Anomaly detection: 100% (target >80%) ✓
+     - Average extraction time: 0ms (regex backend, deterministic)
+  5. Committed all changes to git (commit ain8443462)
+
+Stage Summary:
+- VERA v2 + benchmark + deployment guide ready
+- DB has 2.000 cases, 600 Red Flags, 100% anomaly detection accuracy
+- User can deploy via terminal-local Vercel CLI after rotating tokens (no AI involvement with credentials)
+- Final screenshots in /download/vera_v2_*.png
+- Benchmark report in /download/vera_benchmark_report.json
