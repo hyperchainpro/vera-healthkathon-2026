@@ -1,0 +1,69 @@
+// VERA Prisma schema — SQLite for local dev (production: Neon PostgreSQL)
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// BPJS Reviewer (slide 14 — login authentication)
+model Reviewer {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  role      String   @default("reviewer") // "reviewer" | "admin"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  auditLogs AuditLog[]
+}
+
+// Patient episode (anonymized — no NIK/name/address stored)
+// Sub-kategori: Prolonged Stay & Readmisi (slide 3 PRD)
+model Episode {
+  id            String   @id @default(cuid())
+  caseId        String   @unique // e.g. "PNEU-2026-0312"
+  diseaseCode   String   // ICD-10, e.g. "J18.9" (Pneumonia)
+  diseaseName   String   // "Pneumonia"
+  admitDay      String   // "H1"
+  claimedDays   Int      // e.g. 7 (claimed H1-H7)
+  actualDays    Int?     // calculated by VERA after analysis
+  emrTextRaw    String   // raw EMR text (before stripping)
+  emrTextStrip  String   // stripped text sent to LLM (no PHI)
+  status        String   @default("pending") // "pending" | "analyzed" | "flagged" | "audited"
+  deviationScore Float?  @default(0) // 0.0 - 1.0
+  flagLevel     String?  // "LOW" | "MEDIUM" | "HIGH"
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  labData       LabData[]
+  auditLogs     AuditLog[]
+}
+
+// Daily lab & vital sign data extracted by LLM (one row per day H1, H2, ...)
+model LabData {
+  id          String   @id @default(cuid())
+  episodeId   String
+  episode     Episode  @relation(fields: [episodeId], references: [id], onDelete: Cascade)
+  dayLabel    String   // "H1", "H2", ... "H7"
+  leukosit    Float?   // e.g. 8000 /uL
+  trombosit   Float?   // e.g. 250000 /uL
+  tdSistol    Float?   // e.g. 120
+  tdDiastol   Float?   // e.g. 80
+  suhu        Float?   // e.g. 36.7
+  gcs         Int?     // Glasgow Coma Scale 3-15
+  createdAt   DateTime @default(now())
+}
+
+// Audit trail (slide 17) — track every reviewer action
+model AuditLog {
+  id          String   @id @default(cuid())
+  episodeId   String
+  episode     Episode  @relation(fields: [episodeId], references: [id], onDelete: Cascade)
+  reviewerId  String?
+  reviewer    Reviewer? @relation(fields: [reviewerId], references: [id])
+  action      String   // "viewed" | "flagged" | "overridden" | "evidence_exported"
+  reason      String?  // medical reason for override (slide 18 — Human-in-the-Loop)
+  metadata    String?  // JSON string of additional data
+  createdAt   DateTime @default(now())
+}
