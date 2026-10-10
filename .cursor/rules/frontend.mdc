@@ -1,0 +1,13 @@
+---
+description: Frontend and UI/UX development rules for VERA
+globs: src/components/**/*,src/app/**/*.tsx
+alwaysApply: false
+---
+# Frontend & UI/UX Rules
+
+1. Follow `docs/DESIGN.md` design system tokens.
+2. Provide loading (Skeleton), error, and empty states for every data display component.
+3. Use accessible color contrast (WCAG AA).
+4. Responsive design first: Test on mobile (375px), tablet (768px), and desktop (1440px).
+5. Anti-AI slop: Write natural, crisp medical verifier copy.
+6. Feedback: Show Sonner toast notifications for user actions (submit, approve, reject).

@@ -1,0 +1,33 @@
+{
+  "id": "FEAT-001",
+  "type": "feat",
+  "description": "Implement authentication infrastructure: password hashing with bcryptjs, HMAC-signed session tokens using Node.js crypto, and auth utility functions (session decode, auth guard, role guard). This feature creates the foundation for all subsequent security work.",
+  "status": "pending",
+  "steps": [
+    "1. Install bcryptjs and @types/bcryptjs via npm (package.json has no bcrypt dependency currently).",
+    "2. Create src/lib/auth-utils.ts with: (a) `signSession(userId: string): string` using crypto.createHmac('sha256', NEXTAUTH_SECRET) on JSON payload {uid, ts}, returning base64(payload|signature); (b) `verifySession(token: string): {uid: string; ts: number} | null` splitting token, recomputing HMAC, comparing signatures, checking 24h expiry; (c) `requireAuth(req: Request): Promise<{userId: string; user: User}>` extracting vera-session cookie, calling verifySession, fetching user from db, throwing 401 if any step fails; (d) `requireRole(user: User, allowedRoles: string[]): void` checking user.role in allowedRoles, throwing 403 if not.",
+    "3. Create src/lib/password-hash.ts with: (a) `hashPassword(plain: string): Promise<string>` using bcrypt.hash with cost 12; (b) `verifyPassword(plain: string, hash: string): Promise<boolean>` using bcrypt.compare.",
+    "4. Update src/app/api/auth/login/route.ts: (a) import verifyPassword and signSession; (b) replace `user.password !== password` with `await verifyPassword(password, user.password)` (note: existing DB has plain-text passwords, so this will fail until migration; add TODO comment); (c) replace base64 session token with `signSession(user.id)`; (d) sanitize error response: remove `detail: String(err)`, log full error server-side only.",
+    "5. Update src/app/api/auth/me/route.ts: (a) import verifySession; (b) replace manual cookie parsing + base64 decode with `verifySession(sessionToken)`; (c) keep existing 24h expiry check (verifySession now handles it); (d) sanitize error logging - never log session tokens.",
+    "6. Update src/app/api/auth/logout/route.ts: no changes needed (already just clears cookie).",
+    "7. Add migration note to prisma/schema.prisma comment: 'password field currently stores plain text - must run migration script to hash existing passwords before deploying auth-utils changes'."
+  ],
+  "acceptance_criteria": [
+    "bcryptjs and @types/bcryptjs added to package.json dependencies",
+    "src/lib/auth-utils.ts exports signSession, verifySession, requireAuth, requireRole with correct signatures",
+    "src/lib/password-hash.ts exports hashPassword and verifyPassword",
+    "login route uses HMAC-signed tokens and verifyPassword (with TODO for DB migration)",
+    "/me route uses verifySession helper",
+    "Error responses in auth routes sanitized - no internal error details leaked",
+    "Schema comment documents migration requirement"
+  ],
+  "verification": [
+    "Run `npm install` to verify bcryptjs installs without errors",
+    "Run `npm run dev` and confirm dev server starts without TypeScript errors",
+    "Test login with curl: `curl -X POST http://localhost:3000/api/auth/login -H 'Content-Type: application/json' -d '{\"email\":\"test@example.com\",\"password\":\"wrong\"}' -v` - expect 401 with no error detail leak",
+    "Inspect vera-session cookie value - confirm it's longer than base64 alone (includes HMAC signature)",
+    "Read src/lib/auth-utils.ts and src/lib/password-hash.ts - confirm functions exist with correct logic"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

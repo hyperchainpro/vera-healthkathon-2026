@@ -49,8 +49,11 @@ export function CasesView() {
   const filtered = episodes
     .filter(e => flagFilter === "all" || e.flagLevel === flagFilter)
     .filter(e => diseaseFilter === "all" || e.diseaseName === diseaseFilter)
-    .filter(e => search === "" || e.caseId.toLowerCase().includes(search.toLowerCase()))
-    .filter(e => search === "" || e.diseaseName.toLowerCase().includes(search.toLowerCase()));
+    .filter(e => 
+      search === "" || 
+      e.caseId.toLowerCase().includes(search.toLowerCase()) || 
+      e.diseaseName.toLowerCase().includes(search.toLowerCase())
+    );
 
   const totalPages = Math.ceil(filtered.length / perPage);
   const paginated = filtered.slice((page - 1) * perPage, page * perPage);

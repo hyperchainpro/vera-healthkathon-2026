@@ -99,8 +99,9 @@ async function extractWithZAI(emrText: string): Promise<unknown> {
   const ZAI = await import("z-ai-web-dev-sdk").catch(() => null);
   if (!ZAI) throw new Error("z-ai-web-dev-sdk not installed");
 
-  const sdk = ZAI.default || ZAI;
-  if (typeof sdk.chatCompletions !== "function") {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const sdk: any = ZAI.default || ZAI;
+  if (typeof sdk?.chatCompletions !== "function") {
     throw new Error("z-ai-web-dev-sdk chatCompletions not available");
   }
 

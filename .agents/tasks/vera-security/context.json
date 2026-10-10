@@ -1,0 +1,29 @@
+{
+  "project_type": "Next.js 16.1.1 App Router + Prisma 6.11.1 + PostgreSQL (Neon)",
+  "language": "TypeScript",
+  "build_system": "npm/bun with Next.js build, no custom build scripts",
+  "test_framework": "None installed (no test directory or test scripts in package.json)",
+  "build_command": "npm run build",
+  "test_command": "None available - verification must be manual testing via dev server and API calls",
+  "verification_instructions": "1. Run `npm run dev` to start dev server on port 3000. 2. Test each modified API endpoint with curl or Postman to verify authentication, validation, and error handling. 3. Verify security headers with browser DevTools Network tab. 4. Test rate limiting by making rapid requests. 5. Confirm no stack traces or internal errors leak to response bodies.",
+  "snapshot_or_generated_files": "None - Prisma client is generated via postinstall hook, not checked into git",
+  "environment_constraints": "1. bcryptjs not currently installed - must add to dependencies. 2. No test framework exists - verification is manual. 3. Prisma schema has `password` field (plain text), not `passwordHash` - migration or field rename needed. 4. Session uses base64(JSON), not HMAC-signed - must refactor to use crypto.createHmac with NEXTAUTH_SECRET. 5. NEXTAUTH_SECRET already exists in .env.example but may not be set in .env.",
+  "contribution_requirements": "No CONTRIBUTING.md or AGENTS.md found. Standard Next.js conventions apply: place middleware.ts at src/middleware.ts, new lib utilities in src/lib/, validate with TypeScript compiler.",
+  "key_patterns": "1. All API routes use `export const runtime = 'nodejs'` and `export const dynamic = 'force-dynamic'`. 2. Error responses currently leak `detail: String(err)` to client. 3. No auth checks in any route - must add session validation. 4. Login route in src/app/api/auth/login/route.ts uses plain-text password comparison: `user.password !== password`. 5. Session cookie named 'vera-session' with base64 payload `{uid, ts}`. 6. ROLE_PERMISSIONS object defines role-based access in login and /me routes. 7. Prisma client imported as `import { db } from '@/lib/db'`. 8. Zod already installed (^4.0.2) but not used anywhere.",
+  "relevant_files": [
+    "src/app/api/auth/login/route.ts",
+    "src/app/api/auth/logout/route.ts",
+    "src/app/api/auth/me/route.ts",
+    "src/app/api/claims/route.ts",
+    "src/app/api/claims/[id]/route.ts",
+    "src/app/api/claims/[id]/audit/route.ts",
+    "src/app/api/stats/route.ts",
+    "src/app/api/audit/route.ts",
+    "src/app/api/users/route.ts",
+    "src/lib/db.ts",
+    "prisma/schema.prisma",
+    ".env.example",
+    "package.json"
+  ],
+  "directory_structure": "src/app/api/ contains all API routes (auth, claims, stats, audit, users). src/lib/ contains utilities (db.ts, auth-store.ts, clinical-curve.ts, data-stripping.ts, llm-extract.ts, thresholds.ts, utils.ts). src/components/ contains React components. prisma/ contains schema and migrations. No middleware.ts exists yet."
+}

@@ -10,49 +10,61 @@
  *   - Reviewer activity stats
  */
 
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { requireAuth, requireRole } from "@/lib/auth-utils";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
-    const episodes = await db.episode.findMany({
-      orderBy: { deviationScore: "desc" },
-      take: 500,
-    });
+    const { user } = await requireAuth(req);
+    requireRole(user, ["admin", "supervisor", "reviewer"]);
+    const [total, redFlags, watch, normal, aggregates, diseaseGroup, topRedFlagsRaw] = await Promise.all([
+      db.episode.count(),
+      db.episode.count({ where: { flagLevel: "HIGH" } }),
+      db.episode.count({ where: { flagLevel: "MEDIUM" } }),
+      db.episode.count({ where: { flagLevel: "LOW" } }),
+      db.episode.aggregate({
+        _avg: { deviationScore: true },
+      }),
+      db.episode.groupBy({
+        by: ["diseaseName"],
+        _count: { id: true },
+      }),
+      db.episode.findMany({
+        where: { flagLevel: "HIGH" },
+        orderBy: { deviationScore: "desc" },
+        take: 5,
+        select: {
+          id: true,
+          caseId: true,
+          diseaseName: true,
+          claimedDays: true,
+          deviationScore: true,
+          flagLevel: true,
+          createdAt: true,
+        },
+      }),
+    ]);
 
-    const total = episodes.length;
-    const redFlags = episodes.filter(e => e.flagLevel === "HIGH").length;
-    const watch = episodes.filter(e => e.flagLevel === "MEDIUM").length;
-    const normal = episodes.filter(e => e.flagLevel === "LOW").length;
+    const diseaseDistribution = diseaseGroup.map((d) => ({
+      name: d.diseaseName,
+      count: d._count.id,
+    }));
 
-    // Disease distribution
-    const byDisease: Record<string, number> = {};
-    for (const e of episodes) {
-      byDisease[e.diseaseName] = (byDisease[e.diseaseName] || 0) + 1;
-    }
-    const diseaseDistribution = Object.entries(byDisease).map(([name, count]) => ({ name, count }));
+    const avgScore = aggregates._avg.deviationScore ?? 0;
 
-    // Avg score
-    const avgScore = episodes.length > 0
-      ? episodes.reduce((s, e) => s + (e.deviationScore ?? 0), 0) / episodes.length
-      : 0;
-
-    // Top 5 red flags
-    const topRedFlags = episodes
-      .filter(e => e.flagLevel === "HIGH")
-      .slice(0, 5)
-      .map(e => ({
-        id: e.id,
-        caseId: e.caseId,
-        diseaseName: e.diseaseName,
-        claimedDays: e.claimedDays,
-        deviationScore: e.deviationScore ?? 0,
-        flagLevel: e.flagLevel,
-        createdAt: e.createdAt,
-      }));
+    const topRedFlags = topRedFlagsRaw.map((e) => ({
+      id: e.id,
+      caseId: e.caseId,
+      diseaseName: e.diseaseName,
+      claimedDays: e.claimedDays,
+      deviationScore: e.deviationScore ?? 0,
+      flagLevel: e.flagLevel,
+      createdAt: e.createdAt,
+    }));
 
     // Daily uploads last 7 days (group by day)
     const sevenDaysAgo = new Date();
@@ -116,8 +128,12 @@ export async function GET() {
       topRedFlags,
       topReviewers,
     });
-  } catch (err) {
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Error";
+    if (message.startsWith("Unauthorized")) {
+      return NextResponse.json({ error: "Sesi tidak valid atau telah berakhir" }, { status: 401 });
+    }
     console.error("[VERA] /api/stats error:", err);
-    return NextResponse.json({ error: "Stats failed" }, { status: 500 });
+    return NextResponse.json({ error: "Gagal memuat data statistik" }, { status: 500 });
   }
 }

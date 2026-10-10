@@ -92,14 +92,39 @@ export function LoginView() {
 
           {/* Demo credentials */}
           <div className="pt-4 border-t border-white/10">
-            <div className="text-[10px] uppercase tracking-wider text-white/50 mb-2 flex items-center gap-1.5">
-              <ShieldCheck className="w-3 h-3" /> Demo Credentials (Healthkathon)
+            <div className="text-[10px] uppercase tracking-wider text-white/50 mb-2 flex items-center justify-between">
+              <span className="flex items-center gap-1.5"><ShieldCheck className="w-3 h-3" /> Akun Demo Healthkathon</span>
+              <span className="text-[9px] text-white/40">Klik untuk pilih</span>
             </div>
-            <div className="space-y-1 text-[11px] text-white/60 font-mono">
-              <div>👑 admin@bpjs.go.id / vera2026 (full akses)</div>
-              <div>👁 supervisor@bpjs.go.id / vera2026</div>
-              <div>🔍 reviewer@bpjs.go.id / vera2026</div>
-              <div>🩺 medofficer@bpjs.go.id / vera2026</div>
+            <div className="space-y-1.5">
+              {[
+                { name: "dr. Hendra Pratama, Sp.PK", email: "admin@bpjs.go.id", role: "Administrator" },
+                { name: "dr. Maya Safitri, Sp.S", email: "supervisor@bpjs.go.id", role: "Supervisor" },
+                { name: "Andi Wicaksono, S.Kep., Ners", email: "reviewer@bpjs.go.id", role: "Verifikator" },
+                { name: "dr. Budi Setiawan, Sp.P", email: "medofficer@bpjs.go.id", role: "Medical Officer" },
+              ].map((acc) => (
+                <button
+                  key={acc.email}
+                  type="button"
+                  onClick={() => {
+                    setEmail(acc.email);
+                    setPassword("vera2026");
+                    clearError();
+                  }}
+                  className="w-full flex items-center justify-between p-2 rounded-md bg-white/5 hover:bg-white/10 border border-white/5 transition-colors text-left"
+                >
+                  <div>
+                    <div className="text-xs font-semibold text-white/90">{acc.name}</div>
+                    <div className="text-[10px] text-sky-300 font-mono">{acc.email}</div>
+                  </div>
+                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/10 text-white/70 font-medium">
+                    {acc.role}
+                  </span>
+                </button>
+              ))}
+              <div className="text-[10px] text-white/40 pt-1 text-center font-mono">
+                Password default: <span className="text-white/80 font-bold">vera2026</span>
+              </div>
             </div>
           </div>
         </form>

@@ -8,6 +8,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getStandardCurve, inferDiseaseKey } from "@/lib/clinical-curve";
+import { requireAuth } from "@/lib/auth-utils";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -17,6 +18,7 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    await requireAuth(req);
     const { id } = await params;
 
     const episode = await db.episode.findUnique({
@@ -79,10 +81,14 @@ export async function GET(
         createdAt: a.createdAt,
       })),
     });
-  } catch (err) {
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Error";
+    if (message.startsWith("Unauthorized")) {
+      return NextResponse.json({ error: "Sesi tidak valid atau telah berakhir" }, { status: 401 });
+    }
     console.error("[VERA] GET /api/claims/[id] error:", err);
     return NextResponse.json(
-      { error: "Failed to fetch episode", detail: String(err) },
+      { error: "Gagal memuat detail episode" },
       { status: 500 }
     );
   }

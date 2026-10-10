@@ -1,0 +1,29 @@
+{
+  "id": "FEAT-003",
+  "type": "feat",
+  "description": "Implement security headers and rate limiting via Next.js middleware. This adds defense-in-depth: CSP to prevent XSS, HSTS for HTTPS enforcement, X-Frame-Options against clickjacking, and in-memory sliding-window rate limiting to prevent brute force and DoS attacks. No external dependencies required.",
+  "status": "pending",
+  "steps": [
+    "1. Create src/lib/rate-limit.ts implementing in-memory sliding-window rate limiter: (a) `class RateLimiter` with Map<string, {timestamps: number[]}> storage; (b) `check(key: string, limit: number, windowMs: number): {allowed: boolean; remaining: number; reset: number}` that filters timestamps within window, checks count <= limit, adds current timestamp if allowed, returns result; (c) `cleanup()` method to periodically prune old entries (prevents memory leak); (d) export singleton instance with 15-min auto-cleanup interval. Design note: ponytail: this in-memory approach loses state on restart and doesn't work across multiple server instances; upgrade path is Redis-backed rate limiting (e.g., Upstash) when scaling horizontally.",
+    "2. Create src/middleware.ts (Next.js middleware): (a) export config matcher to run on /api/* routes only; (b) import RateLimiter; (c) for /api/auth/login: apply rate limit 5 requests per 15 minutes per IP (extract IP from x-forwarded-for or req.ip), return 429 with Retry-After header if exceeded; (d) for all other /api/* routes: apply rate limit 100 requests per minute per IP; (e) add security headers to ALL responses: Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self'; (unsafe-inline/unsafe-eval needed for Next.js dev mode and some UI libraries - tighten in production), X-Content-Type-Options: nosniff, X-Frame-Options: DENY, Referrer-Policy: strict-origin-when-cross-origin, Permissions-Policy: camera=(), microphone=(), geolocation=(); (f) in production (NODE_ENV=production), add Strict-Transport-Security: max-age=31536000; includeSubDomains.",
+    "3. Test rate limiting logic: create simple test scenario - make 6 rapid login attempts from same IP, confirm 6th returns 429."
+  ],
+  "acceptance_criteria": [
+    "src/lib/rate-limit.ts exports RateLimiter class with check() method and singleton instance",
+    "src/middleware.ts exists at project root and exports config matching /api/* routes",
+    "Login endpoint rate-limited to 5 req/15min per IP",
+    "All API endpoints rate-limited to 100 req/min per IP",
+    "Security headers set on all API responses: CSP, X-Content-Type-Options, X-Frame-Options, Referrer-Policy, Permissions-Policy",
+    "HSTS header added in production mode only",
+    "429 responses include Retry-After header"
+  ],
+  "verification": [
+    "Run `npm run dev` and confirm server starts without errors",
+    "Test security headers: `curl -I http://localhost:3000/api/auth/me` - confirm response includes X-Frame-Options, CSP, X-Content-Type-Options headers",
+    "Test rate limiting: use a bash loop to make 6 rapid requests to /api/auth/login with same IP - confirm 6th request returns 429 with Retry-After header",
+    "Test rate limiting reset: wait 15 minutes (or adjust test to use shorter window), confirm requests succeed again",
+    "Inspect browser DevTools Network tab when accessing app - confirm CSP header present and no console errors about blocked resources"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

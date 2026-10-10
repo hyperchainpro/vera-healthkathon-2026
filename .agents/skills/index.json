@@ -1,0 +1,88 @@
+{
+  "skills": [
+    {
+      "id": "gstack",
+      "repo": "garrytan/gstack",
+      "name": "GStack Startup OS",
+      "description": "Founder operating stack for rapid execution, validation, and production shipping.",
+      "path": "skills/gstack.md"
+    },
+    {
+      "id": "superpowers",
+      "repo": "obra/superpowers",
+      "name": "Superpowers Engine",
+      "description": "Autonomous development loops, proactive debugging, and self-testing capabilities.",
+      "path": "skills/superpowers.md"
+    },
+    {
+      "id": "taste-skill",
+      "repo": "Leonxlnx/taste-skill",
+      "name": "Taste & Aesthetics",
+      "description": "High craftsmanship design sensibilities, typography precision, and UI balance.",
+      "path": "skills/taste-skill.md"
+    },
+    {
+      "id": "ui-ux-pro-max",
+      "repo": "nextlevelbuilder/ui-ux-pro-max-skill",
+      "name": "UI/UX Pro Max",
+      "description": "Production-grade design system, micro-interactions, responsive grids, and accessibility.",
+      "path": "skills/ui-ux-pro-max.md"
+    },
+    {
+      "id": "marketingskills",
+      "repo": "coreyhaines31/marketingskills",
+      "name": "Marketing & Conversion",
+      "description": "High-converting action buttons, clear value propositions, and onboarding flows.",
+      "path": "skills/marketingskills.md"
+    },
+    {
+      "id": "last30days-skill",
+      "repo": "mvanhorn/last30days-skill",
+      "name": "Latest Best Practices",
+      "description": "Modern full-stack standards, Next.js App Router patterns, and edge optimizations.",
+      "path": "skills/last30days-skill.md"
+    },
+    {
+      "id": "frontend-slides",
+      "repo": "zarazhangrui/frontend-slides",
+      "name": "Frontend Slides & Visuals",
+      "description": "Executive dashboard summaries and interactive presentation components.",
+      "path": "skills/frontend-slides.md"
+    },
+    {
+      "id": "no-ai-slop",
+      "repo": "petergyang/no-ai-slop",
+      "name": "Anti-AI Slop Humanizer",
+      "description": "Filters out generic AI copy, ensuring crisp, authentic, and direct healthcare communication.",
+      "path": "skills/no-ai-slop.md"
+    },
+    {
+      "id": "brag",
+      "repo": "latent-spaces/brag",
+      "name": "Brag Milestone Tracker",
+      "description": "Production changelog generator, technical highlights, and deployment verification log.",
+      "path": "skills/brag.md"
+    },
+    {
+      "id": "claude-for-legal",
+      "repo": "anthropics/claude-for-legal",
+      "name": "Legal & Compliance Guard",
+      "description": "Medical data confidentiality, compliance with Indonesian healthcare regulation (UU PDP / BPJS).",
+      "path": "skills/claude-for-legal.md"
+    },
+    {
+      "id": "caveman",
+      "repo": "JuliusBrussee/caveman",
+      "name": "Caveman Ultra-Fast Logic",
+      "description": "Razor-sharp, concise execution without bloat or circular reasoning.",
+      "path": "skills/caveman.md"
+    },
+    {
+      "id": "awesome-claude-skills",
+      "repo": "ComposioHQ/awesome-claude-skills",
+      "name": "Awesome Skills Registry",
+      "description": "Tool-use protocols, external API routing, and robust error recovery patterns.",
+      "path": "skills/awesome-claude-skills.md"
+    }
+  ]
+}

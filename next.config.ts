@@ -1,11 +1,14 @@
 import type { NextConfig } from "next";
+import path from "path";
 
 const nextConfig: NextConfig = {
-  /* config options here */
   typescript: {
     ignoreBuildErrors: true,
   },
   reactStrictMode: false,
+  productionBrowserSourceMaps: false,
+  poweredByHeader: false,
+  outputFileTracingRoot: path.resolve(__dirname),
 };
 
 export default nextConfig;

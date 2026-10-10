@@ -1,0 +1,15 @@
+---
+description: General rules and coding standards for VERA
+globs: *
+alwaysApply: true
+---
+# General Rules - VERA (Healthkathon 2026)
+
+1. Use TypeScript with strict type checking. Never use `any` unless absolutely unavoidable.
+2. Maintain documentation integrity. Keep `docs/` (Obsidian Vault format) updated as code evolves.
+3. Keep functions focused and small. Follow single-responsibility principles.
+4. Security first: Never expose secrets, keys, or passwords.
+5. Apply the 12 AI Agent Skills principles:
+   - UI/UX Craftsmanship (from taste-skill & ui-ux-pro-max)
+   - Zero AI Slop (concise, professional copy)
+   - Legal/Compliance awareness for medical data (UU PDP & BPJS)

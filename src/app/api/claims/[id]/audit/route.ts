@@ -1,58 +1,50 @@
 /**
- * VERA API — Audit Trail + Human-in-the-Loop Override (Todo #17, #18)
+ * VERA API — Audit Trail + Human-in-the-Loop Override
  * POST /api/claims/[id]/audit
- *
- * Records user actions: viewed, flagged, overridden, evidence_exported.
- * For "overridden" action, requires a medical reason (slide 18 PRD —
- * Human-in-the-Loop: user can mark as false positive with justification).
  */
 
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { requireAuth } from "@/lib/auth-utils";
+import { claimAuditSchema } from "@/lib/validation/schemas";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-
-interface AuditBody {
-  action: "viewed" | "flagged" | "overridden" | "evidence_exported";
-  reason?: string;
-  reviewerEmail?: string;
-}
 
 export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { user } = await requireAuth(req);
     const { id } = await params;
-    const body: AuditBody = await req.json();
 
-    if (!body.action) {
-      return NextResponse.json({ error: "action is required" }, { status: 400 });
-    }
+    const rawBody = await req.json();
+    const parseResult = claimAuditSchema.safeParse(rawBody);
 
-    // Validate: overridden requires reason
-    if (body.action === "overridden" && (!body.reason || body.reason.length < 5)) {
+    if (!parseResult.success) {
       return NextResponse.json(
-        { error: "Medical reason required for override (min 5 chars)" },
+        { error: "Validasi gagal", details: parseResult.error.issues[0]?.message },
         { status: 400 }
       );
     }
 
-    // Find user by email
-    let userId: string | null = null;
-    if (body.reviewerEmail) {
-      const user = await db.user.findUnique({
-        where: { email: body.reviewerEmail.toLowerCase().trim() },
-      });
-      if (user) userId = user.id;
+    const body = parseResult.data;
+
+    // Verify episode exists
+    const episode = await db.episode.findUnique({
+      where: { id },
+    });
+
+    if (!episode) {
+      return NextResponse.json({ error: "Episode klaim tidak ditemukan" }, { status: 404 });
     }
 
-    // Create audit log
+    // Create audit log linked to authenticated user
     const audit = await db.auditLog.create({
       data: {
         episodeId: id,
-        userId,
+        userId: user.id,
         action: body.action,
         reason: body.reason,
       },
@@ -70,13 +62,17 @@ export async function POST(
     return NextResponse.json({
       auditId: audit.id,
       action: audit.action,
-      reviewerName: audit.user?.name ?? "anonymous",
+      reviewerName: user.name,
       createdAt: audit.createdAt,
     });
-  } catch (err) {
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Error";
+    if (message.startsWith("Unauthorized")) {
+      return NextResponse.json({ error: "Sesi tidak valid atau telah berakhir" }, { status: 401 });
+    }
     console.error("[VERA] POST /api/claims/[id]/audit error:", err);
     return NextResponse.json(
-      { error: "Audit log creation failed", detail: String(err) },
+      { error: "Gagal mencatat audit log" },
       { status: 500 }
     );
   }

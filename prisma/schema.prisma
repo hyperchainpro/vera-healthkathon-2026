@@ -13,7 +13,7 @@ datasource db {
 model User {
   id        String   @id @default(cuid())
   email     String   @unique
-  password  String   // hashed (bcrypt-style, demo uses plain text — replace with real hashing in prod)
+  password  String   // TODO: Migration required - currently stores plain text, must run migration script to hash existing passwords with bcryptjs before deploying HMAC-signed auth
   name      String
   role      String   @default("reviewer") // "admin" | "reviewer" | "supervisor" | "medical_officer"
   avatar    String?  // initials or URL

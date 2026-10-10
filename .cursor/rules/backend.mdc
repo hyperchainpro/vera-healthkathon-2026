@@ -1,0 +1,13 @@
+---
+description: Backend and API development rules for VERA
+globs: src/app/api/**/*,src/lib/**/*
+alwaysApply: false
+---
+# Backend & API Security Rules
+
+1. Always authenticate and authorize: Use `requireAuth(req)` and `requireRole(user, allowedRoles)`.
+2. Input validation: Every request body must be parsed through a Zod schema in `src/lib/validation/schemas.ts`.
+3. Database safety: Always use Prisma ORM queries. Never construct raw SQL strings with user input.
+4. Error handling: Never leak `detail: String(err)` or internal stack traces in response JSON. Use structured, generic messages for clients and log details securely on the server.
+5. Password hashing: Always hash with bcrypt cost factor 12 before writing to the database.
+6. Session tokens: Must be HMAC-SHA256 signed with timingSafeEqual verification.

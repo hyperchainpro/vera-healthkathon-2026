@@ -14,24 +14,23 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Z.ai Code Scaffold - AI-Powered Development",
-  description: "Modern Next.js scaffold optimized for AI-powered development with Z.ai. Built with TypeScript, Tailwind CSS, and shadcn/ui.",
-  keywords: ["Z.ai", "Next.js", "TypeScript", "Tailwind CSS", "shadcn/ui", "AI development", "React"],
-  authors: [{ name: "Z.ai Team" }],
+  title: "VERA - Verifikasi Rawat Inap Efisien & Akuntabel | Healthkathon 2026",
+  description: "Platform cerdas telaah klaim rawat inap berbasis analitik klinis dan kecerdasan buatan untuk verifikasi berkas klaim BPJS Kesehatan secara akurat, transparan, dan akuntabel.",
+  keywords: ["VERA", "Healthkathon 2026", "BPJS Kesehatan", "Verifikasi Klaim", "Rawat Inap", "Audit Medis", "Clinical Analytics", "INA-CBG"],
+  authors: [{ name: "Tim Pengembang VERA" }],
   icons: {
-    icon: "https://z-cdn.chatglm.cn/z-ai/static/logo.svg",
+    icon: "/favicon.ico",
   },
   openGraph: {
-    title: "Z.ai Code Scaffold",
-    description: "AI-powered development with modern React stack",
-    url: "https://chat.z.ai",
-    siteName: "Z.ai",
+    title: "VERA - Verifikasi Rawat Inap Efisien & Akuntabel",
+    description: "Sistem otomasi audit dan verifikasi klaim rawat inap berbasis analitik klinis untuk pencegahan dispute klaim dan akuntabilitas pembiayaan kesehatan.",
+    siteName: "VERA Healthkathon 2026",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Z.ai Code Scaffold",
-    description: "AI-powered development with modern React stack",
+    title: "VERA - Verifikasi Rawat Inap Efisien & Akuntabel",
+    description: "Sistem otomasi audit dan verifikasi klaim rawat inap berbasis analitik klinis untuk Healthkathon 2026.",
   },
 };
 

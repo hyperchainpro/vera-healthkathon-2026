@@ -15,6 +15,19 @@ const VIEW_TITLES: Record<string, { title: string; subtitle: string }> = {
   profile: { title: "Profil Reviewer", subtitle: "Informasi akun & statistik audit" },
 };
 
+function formatShortName(name?: string) {
+  if (!name) return "Pengguna";
+  const match = name.match(/^(dr\.\s+[^\s,]+|prof\.\s+[^\s,]+|[^\s,]+)/i);
+  return match ? match[0] : name.split(" ")[0];
+}
+
+const ROLE_LABELS: Record<string, string> = {
+  admin: "Administrator",
+  supervisor: "Supervisor",
+  reviewer: "Verifikator Klaim",
+  medical_officer: "Medical Officer",
+};
+
 export function TopBar() {
   const { user, logout } = useAuthStore();
   const { currentView, selectedCaseId } = useNavStore();
@@ -73,8 +86,8 @@ export function TopBar() {
                 {user?.avatar || "?"}
               </div>
               <div className="text-left">
-                <div className="text-xs font-semibold text-slate-900">{user?.name?.split(" ")[0]}</div>
-                <div className="text-[10px] text-slate-500">{user?.role}</div>
+                <div className="text-xs font-semibold text-slate-900">{formatShortName(user?.name)}</div>
+                <div className="text-[10px] text-slate-500">{ROLE_LABELS[user?.role || ""] || user?.role}</div>
               </div>
               <ChevronDown className="w-3 h-3 text-slate-400" />
             </button>

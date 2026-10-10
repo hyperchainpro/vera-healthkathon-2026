@@ -1,0 +1,35 @@
+{
+  "id": "FEAT-002",
+  "type": "feat",
+  "description": "Add authentication guards to all API routes and implement Zod input validation. This protects all healthcare data endpoints from unauthenticated access and validates all request bodies/query params to prevent injection attacks and malformed data.",
+  "status": "pending",
+  "steps": [
+    "1. Create src/lib/validation/schemas.ts with Zod schemas: (a) `loginSchema` for {email: email(), password: string().min(8)}; (b) `claimUploadSchema` for {caseId: string().min(1), diseaseCode: string().optional(), diseaseName: string().optional(), emrText: string().min(10), claimedDays: number().int().positive().optional()}; (c) `auditActionSchema` for {action: enum(['viewed','flagged','overridden','evidence_exported']), reason: string().optional(), reviewerEmail: email().optional()}; (d) `paginationSchema` for {limit: coerce.number().int().min(1).max(500).default(100), offset: coerce.number().int().min(0).default(0)}.",
+    "2. Update src/app/api/auth/login/route.ts: add loginSchema.safeParse(await req.json()) at start of POST handler, return 400 with validation errors if !success.",
+    "3. Update src/app/api/claims/route.ts: (a) GET handler: add requireAuth(req) at start (import from auth-utils), catch and return 401; (b) POST handler: add requireAuth(req), then validate body with claimUploadSchema.safeParse, return 400 if invalid; (c) sanitize error response - remove `detail: String(err)` from all catch blocks.",
+    "4. Update src/app/api/claims/[id]/route.ts: (a) add requireAuth(req) at start of GET handler; (b) add IDOR check: after fetching episode, verify it exists (already done) but add audit log entry for 'viewed_case' action with userId; (c) sanitize error response.",
+    "5. Update src/app/api/claims/[id]/audit/route.ts: (a) add requireAuth(req) at start; (b) validate body with auditActionSchema.safeParse; (c) use authenticated userId instead of looking up by reviewerEmail (remove reviewerEmail from request body, use session user); (d) add role check: requireRole(user, ['admin','supervisor','reviewer']) before allowing override action; (e) sanitize error response.",
+    "6. Update src/app/api/stats/route.ts: (a) add requireAuth(req) at start of GET handler; (b) add role check: requireRole(user, ['admin','supervisor','reviewer']) since stats expose PHI counts; (c) sanitize error response.",
+    "7. Update src/app/api/audit/route.ts: (a) add requireAuth(req) at start; (b) validate query params with paginationSchema.safeParse for limit/offset; (c) add role check: requireRole(user, ['admin','supervisor']) for viewing audit logs; (d) sanitize error response.",
+    "8. Update src/app/api/users/route.ts: (a) add requireAuth(req) at start; (b) add role check: requireRole(user, ['admin']) since only admins view user list; (c) sanitize error response."
+  ],
+  "acceptance_criteria": [
+    "src/lib/validation/schemas.ts exports loginSchema, claimUploadSchema, auditActionSchema, paginationSchema",
+    "All API routes in src/app/api/claims/, src/app/api/stats/, src/app/api/audit/, src/app/api/users/ call requireAuth at start",
+    "Role-based checks applied: stats (admin/supervisor/reviewer), audit logs (admin/supervisor), users (admin only), audit override (admin/supervisor/reviewer)",
+    "All request bodies and query params validated with Zod schemas",
+    "All error responses sanitized - no `detail: String(err)` anywhere",
+    "IDOR protection on /claims/[id] - audit log created on view",
+    "/claims/[id]/audit uses session userId, not reviewerEmail from body"
+  ],
+  "verification": [
+    "Run `npm run dev` and confirm no TypeScript errors",
+    "Test unauthenticated access: `curl http://localhost:3000/api/claims` - expect 401",
+    "Test authenticated access: login first to get cookie, then `curl http://localhost:3000/api/claims -H 'Cookie: vera-session=<token>'` - expect 200 with data",
+    "Test validation: `curl -X POST http://localhost:3000/api/claims -H 'Cookie: vera-session=<token>' -H 'Content-Type: application/json' -d '{\"emrText\":\"short\"}'` - expect 400 with Zod validation error",
+    "Test role check: as 'medical_officer' user, `curl http://localhost:3000/api/users -H 'Cookie: vera-session=<token>'` - expect 403",
+    "Inspect any API error response - confirm no stack traces or internal error messages visible"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

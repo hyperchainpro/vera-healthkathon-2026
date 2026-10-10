@@ -1,0 +1,30 @@
+{
+  "id": "FEAT-004",
+  "type": "docs",
+  "description": "Document password migration procedure and git history cleanup. This creates runnable scripts and documentation for the operator to complete the final hardening steps that require manual intervention: hashing existing plain-text passwords in the database, and purging .env from git history.",
+  "status": "pending",
+  "steps": [
+    "1. Create scripts/migrate-passwords.ts: (a) import PrismaClient and hashPassword from src/lib/password-hash; (b) fetch all users; (c) for each user, if password doesn't start with '$2a$' (bcrypt prefix), hash it with hashPassword and update user record; (d) log progress and count; (e) add error handling with transaction rollback; (f) add dry-run mode flag. Include usage instructions in file header comment: 'Run with: npx ts-node scripts/migrate-passwords.ts --dry-run (preview) then npx ts-node scripts/migrate-passwords.ts (apply)'.",
+    "2. Create scripts/cleanup-git-history.sh (bash script for git filter-branch): (a) add commands to remove .env from git history using git filter-repo or filter-branch; (b) add warning banner: THIS IS DESTRUCTIVE - backs up repo first, requires force-push, invalidates all clones; (c) include steps: git filter-branch --force --index-filter 'git rm --cached --ignore-unmatch .env' --prune-empty --tag-name-filter cat -- --all; then git push origin --force --all; (d) add note to rotate all secrets after cleanup since they were exposed.",
+    "3. Create docs/SECURITY.md documenting: (a) the complete security hardening implemented (auth, validation, rate limiting, headers); (b) password migration procedure with step-by-step instructions referencing migrate-passwords.ts; (c) git history cleanup procedure referencing cleanup-git-history.sh; (d) credential rotation checklist (all tokens in original user message must be rotated: GitHub PATs, Neon API key, OpenRouter API, Convex key, Xyrusrouter, Vercel PATs); (e) ongoing security maintenance: NEXTAUTH_SECRET rotation every 90 days, dependency updates, security audit schedule.",
+    "4. Update .env.example: add comment at top: '# SECURITY NOTE: Never commit .env to git. If already committed, run scripts/cleanup-git-history.sh and rotate all secrets.'",
+    "5. Update README.md or create DEPLOYMENT.md section on security: (a) reference docs/SECURITY.md; (b) add pre-deployment checklist: run migrate-passwords.ts, verify NEXTAUTH_SECRET is set and unique, confirm .env not in git, test authentication and rate limiting."
+  ],
+  "acceptance_criteria": [
+    "scripts/migrate-passwords.ts exists with dry-run and apply modes",
+    "scripts/cleanup-git-history.sh exists with destructive operation warnings",
+    "docs/SECURITY.md documents all hardening work, migration procedures, and credential rotation",
+    ".env.example has security warning comment",
+    "README.md or DEPLOYMENT.md references security documentation and pre-deployment checklist"
+  ],
+  "verification": [
+    "Read scripts/migrate-passwords.ts - confirm it uses hashPassword and has dry-run flag",
+    "Read scripts/cleanup-git-history.sh - confirm it uses git filter-branch and has warnings",
+    "Read docs/SECURITY.md - confirm all features (FEAT-001, FEAT-002, FEAT-003) are documented with migration steps",
+    "Check .env.example - confirm security warning present",
+    "Run `npx ts-node --help` to verify ts-node available (may need to install as dev dependency)",
+    "Do NOT run migrate-passwords.ts or cleanup-git-history.sh yet - they are for operator execution post-review"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

@@ -13,17 +13,25 @@ import { stripPHI } from "@/lib/data-stripping";
 import { extractLabData } from "@/lib/llm-extract";
 import { getStandardCurve, inferDiseaseKey } from "@/lib/clinical-curve";
 import { computeDeviationScore, getFlagLevel, type PatientDataPoint } from "@/lib/thresholds";
+import { requireAuth } from "@/lib/auth-utils";
+import { claimUploadSchema } from "@/lib/validation/schemas";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 // GET /api/claims — list with Red Flag sorting
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
+    await requireAuth(req);
+
     const episodes = await db.episode.findMany({
-      include: { labData: true },
+      include: {
+        _count: {
+          select: { labData: true },
+        },
+      },
       orderBy: { deviationScore: "desc" },
-      take: 500,
+      take: 2000,
     });
 
     const serialized = episodes.map(ep => ({
@@ -36,46 +44,40 @@ export async function GET() {
       status: ep.status,
       deviationScore: ep.deviationScore ?? 0,
       flagLevel: ep.flagLevel ?? "LOW",
-      dayCount: ep.labData.length,
+      dayCount: ep._count.labData,
       createdAt: ep.createdAt,
     }));
 
     return NextResponse.json({ episodes: serialized, count: serialized.length });
-  } catch (err) {
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Error";
+    if (message.startsWith("Unauthorized")) {
+      return NextResponse.json({ error: "Sesi tidak valid atau telah berakhir" }, { status: 401 });
+    }
     console.error("[VERA] GET /api/claims error:", err);
     return NextResponse.json(
-      { error: "Failed to fetch episodes", detail: String(err) },
+      { error: "Gagal memuat data klaim" },
       { status: 500 }
     );
   }
 }
 
 // POST /api/claims — single EMR text upload + analyze
-interface UploadBody {
-  caseId?: string;
-  diseaseCode?: string;
-  diseaseName?: string;
-  emrText: string;
-  claimedDays?: number;
-}
-
 export async function POST(req: NextRequest) {
   try {
-    const body: UploadBody = await req.json();
+    await requireAuth(req);
 
-    if (!body.emrText || body.emrText.length < 10) {
+    const rawBody = await req.json();
+    const parseResult = claimUploadSchema.safeParse(rawBody);
+
+    if (!parseResult.success) {
       return NextResponse.json(
-        { error: "emrText is required (min 10 chars)" },
+        { error: "Validasi gagal", details: parseResult.error.issues[0]?.message },
         { status: 400 }
       );
     }
 
-    if (!body.caseId) {
-      return NextResponse.json(
-        { error: "caseId is required" },
-        { status: 400 }
-      );
-    }
+    const body = parseResult.data;
 
     const claimedDays = body.claimedDays ?? 7;
     const diseaseKey = inferDiseaseKey(
@@ -202,10 +204,14 @@ export async function POST(req: NextRequest) {
       extractedDays: extraction.data.days.length,
       stripped: stripResult.removedItems,
     });
-  } catch (err) {
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Error";
+    if (message.startsWith("Unauthorized")) {
+      return NextResponse.json({ error: "Sesi tidak valid atau telah berakhir" }, { status: 401 });
+    }
     console.error("[VERA] POST /api/claims error:", err);
     return NextResponse.json(
-      { error: "Upload failed", detail: String(err) },
+      { error: "Gagal memproses unggahan klaim" },
       { status: 500 }
     );
   }

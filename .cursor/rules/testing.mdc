@@ -1,0 +1,11 @@
+---
+description: Testing and verification rules for VERA
+globs: tests/**/*,scripts/**/*
+alwaysApply: false
+---
+# Testing & Quality Assurance Rules
+
+1. Before pushing code or preparing for deployment, always execute `npm run build` to verify webpack bundling.
+2. Verify TypeScript types: `npx tsc --noEmit` must pass without syntax/type errors.
+3. Test edge cases: invalid email format, expired token, forbidden role access, and missing body fields.
+4. Rate limiting test: verify 6 rapid requests trigger HTTP 429.

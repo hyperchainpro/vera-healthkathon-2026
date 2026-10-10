@@ -31,31 +31,31 @@ function pickFloat(min: number, max: number, decimals = 1): number {
 const DEFAULT_USERS = [
   {
     email: "admin@bpjs.go.id",
-    password: "vera2026", // demo only — replace with bcrypt hash in production
-    name: "Dr. Admin Saputra",
+    password: "vera2026",
+    name: "dr. Hendra Pratama, Sp.PK",
     role: "admin",
-    department: "System Administrator",
+    department: "Teknologi Informasi & Audit Klaim",
   },
   {
     email: "supervisor@bpjs.go.id",
     password: "vera2026",
-    name: "Dr. Maya Supervisor",
+    name: "dr. Maya Safitri, Sp.S",
     role: "supervisor",
-    department: "Audit Supervisor",
+    department: "Supervisi Verifikasi Medis",
   },
   {
     email: "reviewer@bpjs.go.id",
     password: "vera2026",
-    name: "Andi Reviewer",
+    name: "Andi Wicaksono, S.Kep., Ners",
     role: "reviewer",
-    department: "Medical Audit",
+    department: "Verifikasi Manfaat Rujukan Lanjutan",
   },
   {
     email: "medofficer@bpjs.go.id",
     password: "vera2026",
-    name: "Dr. Budi Medical",
+    name: "dr. Budi Setiawan, Sp.P",
     role: "medical_officer",
-    department: "Clinical Review",
+    department: "Tim Pertimbangan Klinis (TPK)",
   },
 ];
 
