@@ -58,7 +58,10 @@ export function DashboardView() {
     );
   }
 
-  const k = stats.kpis;
+  const k = stats.kpis || {
+  total: 0, redFlags: 0, watch: 0, normal: 0,
+  avgScore: 0, estSavingsM: "0", estTimeSavedHours: 0,
+};
 
   return (
     <div className="p-8 space-y-6">
