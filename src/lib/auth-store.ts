@@ -85,6 +85,7 @@ export const useAuthStore = create<AuthState>()(
     {
       name: "vera-auth",
       partialize: (state) => ({ user: state.user }),
+      skipHydration: true,
     }
   )
 );
