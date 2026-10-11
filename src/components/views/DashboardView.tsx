@@ -38,19 +38,26 @@ const FLAG_COLORS = { HIGH: "#DC2626", MEDIUM: "#F59E0B", LOW: "#16A34A" };
 const DISEASE_COLORS = ["#0EA5E9", "#0F2A5C", "#16A34A", "#F59E0B"];
 
 export function DashboardView() {
-  const [stats, setStats] = useState<Stats | null>(null);
+  const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const { openCase, setView } = useNavStore();
 
   useEffect(() => {
     fetch("/api/stats")
       .then(r => r.json())
-      .then(data => setStats(data))
-      .catch(() => {})
+      .then(data => {
+        setStats(data);
+        setError(null);
+      })
+      .catch((err) => {
+        setError("Gagal memuat data dashboard");
+        setStats(null);
+      })
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading || !stats) {
+  if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
         <Loader2 className="w-6 h-6 animate-spin text-slate-400" />
@@ -58,10 +65,35 @@ export function DashboardView() {
     );
   }
 
+  if (error || !stats) {
+    return (
+      <div className="p-8">
+        <Card className="p-8 text-center">
+          <AlertTriangle className="w-12 h-12 mx-auto text-amber-400 mb-3" />
+          <h3 className="text-lg font-bold text-slate-900 mb-2">Dashboard Data Belum Tersedia</h3>
+          <p className="text-sm text-slate-500 mb-4">
+            Database belum ter-seed atau connection bermasalah. Anda masih bisa pakai menu lain.
+          </p>
+          <div className="flex gap-2 justify-center">
+            <Button onClick={() => setView("cases")} size="sm">Lihat Kasus</Button>
+            <Button onClick={() => setView("upload")} variant="outline" size="sm">Upload Kasus</Button>
+          </div>
+        </Card>
+      </div>
+    );
+  }
+
+  // Safe access dengan fallback
   const k = stats.kpis || {
-  total: 0, redFlags: 0, watch: 0, normal: 0,
-  avgScore: 0, estSavingsM: "0", estTimeSavedHours: 0,
-};
+    total: 0, redFlags: 0, watch: 0, normal: 0,
+    avgScore: 0, estSavingsM: "0", estTimeSavedHours: 0,
+  };
+  const diseaseDist = stats.diseaseDistribution || [];
+  const dailyUploads = stats.dailyUploads || [];
+  const topRedFlags = stats.topRedFlags || [];
+  const topReviewers = stats.topReviewers || [];
+
+  // ... (sisanya tetap sama, ganti semua akses stats.xxx jadi variable lokal di atas)
 
   return (
     <div className="p-8 space-y-6">
